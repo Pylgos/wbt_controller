@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the InertialUnit node         */
+/* Description:  Webots C programming interface for the InertialUnit node */
 /**********************************************************************************/
 
 #ifndef WB_INERTIAL_UNIT_H

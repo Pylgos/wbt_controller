@@ -40,7 +40,8 @@ static void g_image_make_chess_board(GImage *image) {
   for (j = 0; j < 64; ++j) {
     for (i = 0; i < 64; ++i) {
       idx = i * 64 * 3 + j * 3;
-      chessboard = ((((i & 0x8) == 0) ? 1 : 0) ^ (((j & 0x8) == 0) ? 1 : 0)) * 255;
+      chessboard =
+          ((((i & 0x8) == 0) ? 1 : 0) ^ (((j & 0x8) == 0) ? 1 : 0)) * 255;
       image->data[idx++] = chessboard;
       image->data[idx++] = chessboard;
       image->data[idx++] = chessboard;
@@ -61,7 +62,8 @@ static int g_image_png_load(const char *filename, GImage *image) {
     return g_image_file_not_found(filename, image);
 
   int number_of_components;
-  image->data = stbi_load(filename, &image->width, &image->height, &number_of_components, 0);
+  image->data = stbi_load(filename, &image->width, &image->height,
+                          &number_of_components, 0);
 
   if (!image->data)
     return false;
@@ -78,7 +80,8 @@ static int g_image_jpeg_load(const char *filename, GImage *image) {
     return g_image_file_not_found(filename, image);
 
   int number_of_components;
-  image->data = stbi_load(filename, &image->width, &image->height, &number_of_components, 0);
+  image->data = stbi_load(filename, &image->width, &image->height,
+                          &number_of_components, 0);
 
   if (!image->data)
     return false;
@@ -90,20 +93,28 @@ static int g_image_jpeg_load(const char *filename, GImage *image) {
 
 unsigned char g_image_get_type(const char *filename) {
   int l = strlen(filename);
-  if (((filename[l - 3] == 'j' || filename[l - 3] == 'J') && (filename[l - 2] == 'p' || filename[l - 2] == 'P') &&
+  if (((filename[l - 3] == 'j' || filename[l - 3] == 'J') &&
+       (filename[l - 2] == 'p' || filename[l - 2] == 'P') &&
        (filename[l - 1] == 'g' || filename[l - 1] == 'G')) ||
-      ((filename[l - 4] == 'j' || filename[l - 4] == 'J') && (filename[l - 3] == 'p' || filename[l - 3] == 'P') &&
-       (filename[l - 2] == 'e' || filename[l - 2] == 'E') && (filename[l - 1] == 'g' || filename[l - 1] == 'G')))
+      ((filename[l - 4] == 'j' || filename[l - 4] == 'J') &&
+       (filename[l - 3] == 'p' || filename[l - 3] == 'P') &&
+       (filename[l - 2] == 'e' || filename[l - 2] == 'E') &&
+       (filename[l - 1] == 'g' || filename[l - 1] == 'G')))
     return G_IMAGE_JPEG;
-  else if ((filename[l - 3] == 'p' || filename[l - 3] == 'P') && (filename[l - 2] == 'n' || filename[l - 2] == 'N') &&
+  else if ((filename[l - 3] == 'p' || filename[l - 3] == 'P') &&
+           (filename[l - 2] == 'n' || filename[l - 2] == 'N') &&
            (filename[l - 1] == 'g' || filename[l - 1] == 'G'))
     return G_IMAGE_PNG;
-  else if (((filename[l - 3] == 't' || filename[l - 3] == 'T') && (filename[l - 2] == 'i' || filename[l - 2] == 'I') &&
+  else if (((filename[l - 3] == 't' || filename[l - 3] == 'T') &&
+            (filename[l - 2] == 'i' || filename[l - 2] == 'I') &&
             (filename[l - 1] == 'f' || filename[l - 1] == 'F')) ||
-           ((filename[l - 4] == 't' || filename[l - 4] == 'T') && (filename[l - 3] == 'i' || filename[l - 3] == 'I') &&
-            (filename[l - 2] == 'f' || filename[l - 2] == 'F') && (filename[l - 1] == 'f' || filename[l - 1] == 'F')))
+           ((filename[l - 4] == 't' || filename[l - 4] == 'T') &&
+            (filename[l - 3] == 'i' || filename[l - 3] == 'I') &&
+            (filename[l - 2] == 'f' || filename[l - 2] == 'F') &&
+            (filename[l - 1] == 'f' || filename[l - 1] == 'F')))
     return G_IMAGE_TIFF;
-  else if ((filename[l - 3] == 'h' || filename[l - 3] == 'H') && (filename[l - 2] == 'd' || filename[l - 2] == 'D') &&
+  else if ((filename[l - 3] == 'h' || filename[l - 3] == 'H') &&
+           (filename[l - 2] == 'd' || filename[l - 2] == 'D') &&
            (filename[l - 1] == 'r' || filename[l - 1] == 'R'))
     return G_IMAGE_HDR;
   else
@@ -131,7 +142,8 @@ static int g_image_png_save(GImage *img, const char *filename) {
       char cwd[256];
       const char *r = getcwd(cwd, 256);
       if (r)
-        fprintf(stderr, "Insufficient permissions to write file: %s%c%s\n", cwd, DIR_SEPARATOR, filename);
+        fprintf(stderr, "Insufficient permissions to write file: %s%c%s\n", cwd,
+                DIR_SEPARATOR, filename);
       else
         fprintf(stderr, "Cannot get current directory for %s!\n", filename);
     }
@@ -140,7 +152,8 @@ static int g_image_png_save(GImage *img, const char *filename) {
   fclose(fd);
 
   if (img->data_format == G_IMAGE_DATA_FORMAT_BGRA) {
-    unsigned char *image = (unsigned char *)malloc(4 * img->width * img->height);
+    unsigned char *image =
+        (unsigned char *)malloc(4 * img->width * img->height);
     int i;
     for (i = 0; i < img->width * img->height; ++i) {
       image[4 * i] = img->data[4 * i + 2];
@@ -148,7 +161,9 @@ static int g_image_png_save(GImage *img, const char *filename) {
       image[4 * i + 2] = img->data[4 * i];
       image[4 * i + 3] = img->data[4 * i + 3];
     }
-    const int ret = stbi_write_png(filename, img->width, img->height, STBI_rgb_alpha, image, img->width * STBI_rgb_alpha);
+    const int ret =
+        stbi_write_png(filename, img->width, img->height, STBI_rgb_alpha, image,
+                       img->width * STBI_rgb_alpha);
     free(image);
     if (ret != 1)
       return -1;
@@ -158,8 +173,8 @@ static int g_image_png_save(GImage *img, const char *filename) {
   int number_of_components = STBI_rgb_alpha;
   if (img->data_format == G_IMAGE_DATA_FORMAT_RGB)
     number_of_components = STBI_rgb;
-  if (stbi_write_png(filename, img->width, img->height, number_of_components, img->data, img->width * number_of_components) !=
-      1)
+  if (stbi_write_png(filename, img->width, img->height, number_of_components,
+                     img->data, img->width * number_of_components) != 1)
     return -1;
   return 0;
 }
@@ -173,21 +188,24 @@ static int g_image_jpeg_save(GImage *img, char quality, const char *filename) {
   fclose(fd);
 
   if (img->data_format == G_IMAGE_DATA_FORMAT_BGRA) {
-    unsigned char *image = (unsigned char *)malloc(3 * img->width * img->height);
+    unsigned char *image =
+        (unsigned char *)malloc(3 * img->width * img->height);
     int i;
     for (i = 0; i < img->width * img->height; ++i) {
       image[3 * i] = img->data[4 * i + 2];
       image[3 * i + 1] = img->data[4 * i + 1];
       image[3 * i + 2] = img->data[4 * i];
     }
-    const int ret = stbi_write_jpg(filename, img->width, img->height, STBI_rgb, image, quality);
+    const int ret = stbi_write_jpg(filename, img->width, img->height, STBI_rgb,
+                                   image, quality);
     free(image);
     if (ret != 1)
       return -1;
     return 0;
   }
 
-  if (stbi_write_jpg(filename, img->width, img->height, STBI_rgb, img->data, quality) != 1)
+  if (stbi_write_jpg(filename, img->width, img->height, STBI_rgb, img->data,
+                     quality) != 1)
     return -1;
   return 0;
 }
@@ -200,22 +218,23 @@ static int g_image_hdr_save(GImage *img, const char *filename) {
   }
   fclose(fd);
 
-  if (stbi_write_hdr(filename, img->width, img->height, STBI_grey, img->float_data) != 1)
+  if (stbi_write_hdr(filename, img->width, img->height, STBI_grey,
+                     img->float_data) != 1)
     return -1;
   return 0;
 }
 
 int g_image_save(GImage *img, const char *filename, char quality) {
   switch (g_image_get_type(filename)) {
-    case G_IMAGE_JPEG:
-      return g_image_jpeg_save(img, quality, filename);
-    case G_IMAGE_PNG:
-      return g_image_png_save(img, filename);
-    case G_IMAGE_HDR:
-      return g_image_hdr_save(img, filename);
-    default:
-      fprintf(stderr, "Cannot save: unsupported image type: %s\n", filename);
-      return -1;
+  case G_IMAGE_JPEG:
+    return g_image_jpeg_save(img, quality, filename);
+  case G_IMAGE_PNG:
+    return g_image_png_save(img, filename);
+  case G_IMAGE_HDR:
+    return g_image_hdr_save(img, filename);
+  default:
+    fprintf(stderr, "Cannot save: unsupported image type: %s\n", filename);
+    return -1;
   }
 }
 
@@ -226,22 +245,28 @@ struct ImageData {
 
 void g_image_save_to_jpeg_buffer_callback(void *context, void *data, int size) {
   if (!*(((struct ImageData *)context)->target_data))
-    *(((struct ImageData *)context)->target_data) = (unsigned char *)malloc(size);
+    *(((struct ImageData *)context)->target_data) =
+        (unsigned char *)malloc(size);
   else
     *(((struct ImageData *)context)->target_data) = (unsigned char *)realloc(
-      *(((struct ImageData *)context)->target_data), *(((struct ImageData *)context)->target_data_size) + size);
-  memcpy(*(((struct ImageData *)context)->target_data) + *(((struct ImageData *)context)->target_data_size), data, size);
+        *(((struct ImageData *)context)->target_data),
+        *(((struct ImageData *)context)->target_data_size) + size);
+  memcpy(*(((struct ImageData *)context)->target_data) +
+             *(((struct ImageData *)context)->target_data_size),
+         data, size);
   *(((struct ImageData *)context)->target_data_size) += size;
 }
 
-int g_image_save_to_jpeg_buffer(GImage *img, unsigned char **target_data, unsigned long *target_data_size, char quality) {
+int g_image_save_to_jpeg_buffer(GImage *img, unsigned char **target_data,
+                                unsigned long *target_data_size, char quality) {
   struct ImageData imageData;
   imageData.target_data = target_data;
   imageData.target_data_size = target_data_size;
   *target_data_size = 0;
 
-  if (stbi_write_jpg_to_func((stbi_write_func *)&g_image_save_to_jpeg_buffer_callback, &imageData, img->width, img->height,
-                             STBI_rgb, img->data, quality) != 1)
+  if (stbi_write_jpg_to_func(
+          (stbi_write_func *)&g_image_save_to_jpeg_buffer_callback, &imageData,
+          img->width, img->height, STBI_rgb, img->data, quality) != 1)
     return -1;
 
   return 0;
@@ -251,15 +276,15 @@ GImage *g_image_new(const char *filename) {
   GImage *image = malloc(sizeof(GImage));
   image->failed = true;
   switch (g_image_get_type(filename)) {
-    case G_IMAGE_JPEG:
-      image->failed = !g_image_jpeg_load(filename, image);
-      break;
-    case G_IMAGE_PNG:
-      image->failed = !g_image_png_load(filename, image);
-      break;
-    default:
-      g_image_make_chess_board(image);
-      fprintf(stderr, "Unsupported image type: %s\n", filename);
+  case G_IMAGE_JPEG:
+    image->failed = !g_image_jpeg_load(filename, image);
+    break;
+  case G_IMAGE_PNG:
+    image->failed = !g_image_png_load(filename, image);
+    break;
+  default:
+    g_image_make_chess_board(image);
+    fprintf(stderr, "Unsupported image type: %s\n", filename);
   }
   return image;
 }
@@ -274,11 +299,15 @@ void g_image_flip(GImage *im) {
   unsigned char *flipped_im = malloc(width * height * channel);
   for (i = 0; i < height; ++i) {
     for (j = 0; j < width; ++j) {
-      flipped_im[(i * width + width - 1 - j) * channel] = im->data[(i * width + j) * channel];
-      flipped_im[(i * width + width - 1 - j) * channel + 1] = im->data[(i * width + j) * channel + 1];
-      flipped_im[(i * width + width - 1 - j) * channel + 2] = im->data[(i * width + j) * channel + 2];
+      flipped_im[(i * width + width - 1 - j) * channel] =
+          im->data[(i * width + j) * channel];
+      flipped_im[(i * width + width - 1 - j) * channel + 1] =
+          im->data[(i * width + j) * channel + 1];
+      flipped_im[(i * width + width - 1 - j) * channel + 2] =
+          im->data[(i * width + j) * channel + 2];
       if (channel == 4)
-        flipped_im[(i * width + width - 1 - j) * channel + 3] = im->data[(i * width + j) * channel + 3];
+        flipped_im[(i * width + width - 1 - j) * channel + 3] =
+            im->data[(i * width + j) * channel + 3];
     }
   }
   free(im->data);
@@ -286,15 +315,20 @@ void g_image_flip(GImage *im) {
   im->flipped = !im->flipped;
 }
 
-int g_image_downscale(GImage *img, int new_width, int new_height, float max_range) {
+int g_image_downscale(GImage *img, int new_width, int new_height,
+                      float max_range) {
   // assumptions:
   // - img->data is cleared at the caller level.
-  // - (G_IMAGE_DATA_FORMAT_BGRA || G_IMAGE_DATA_FORMAT_F) -> G_IMAGE_DATA_FORMAT_RGB conversion.
+  // - (G_IMAGE_DATA_FORMAT_BGRA || G_IMAGE_DATA_FORMAT_F) ->
+  // G_IMAGE_DATA_FORMAT_RGB conversion.
   // - new dimension is smaller than or equals to the old dimension.
-  assert(img->data_format == G_IMAGE_DATA_FORMAT_BGRA || img->data_format == G_IMAGE_DATA_FORMAT_F);
-  assert((new_width < img->width && new_height < img->height) || (new_width < img->width && new_height == img->height) ||
+  assert(img->data_format == G_IMAGE_DATA_FORMAT_BGRA ||
+         img->data_format == G_IMAGE_DATA_FORMAT_F);
+  assert((new_width < img->width && new_height < img->height) ||
+         (new_width < img->width && new_height == img->height) ||
          (new_width == img->width && new_height < img->height) ||
-         (new_width == img->width && new_height == img->height)  // do only a BGRA -> RGB conversion.
+         (new_width == img->width &&
+          new_height == img->height) // do only a BGRA -> RGB conversion.
   );
 
   unsigned char *new_data = malloc(new_width * new_height * 3);
@@ -306,20 +340,21 @@ int g_image_downscale(GImage *img, int new_width, int new_height, float max_rang
   const float _255_over_max = 255.0f / max_range;
   int new_y, new_x, c;
   for (new_y = 0; new_y < new_height; ++new_y) {
-    const int y = height_ratio * new_y + 0.5f;  // +0.5 to round it.
+    const int y = height_ratio * new_y + 0.5f; // +0.5 to round it.
     const int line_index = y * img->width;
     const int new_line_index = new_y * new_width;
     for (new_x = 0; new_x < new_width; ++new_x) {
-      const int x = width_ratio * new_x + 0.5f;  // +0.5 to round it.
+      const int x = width_ratio * new_x + 0.5f; // +0.5 to round it.
       const int new_column_index = 3 * (new_line_index + new_x);
       if (img->data_format == G_IMAGE_DATA_FORMAT_BGRA) {
         const int column_index = 4 * (line_index + x);
         for (c = 0; c < 3; ++c)
           new_data[new_column_index + c] = img->data[column_index + (2 - c)];
-      } else {  // img->data_format == G_IMAGE_DATA_FORMAT_F
+      } else { // img->data_format == G_IMAGE_DATA_FORMAT_F
         const int column_index = line_index + x;
         for (c = 0; c < 3; ++c)
-          new_data[new_column_index + c] = img->float_data[column_index] * _255_over_max;
+          new_data[new_column_index + c] =
+              img->float_data[column_index] * _255_over_max;
       }
     }
   }

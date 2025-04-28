@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the GPS node                  */
+/* Description:  Webots C programming interface for the GPS node */
 /**********************************************************************************/
 
 #ifndef WB_GPS_H
@@ -38,7 +38,10 @@ const double *wb_gps_get_values(WbDeviceTag tag);
 
 const char *wb_gps_convert_to_degrees_minutes_seconds(double decimal_degrees);
 
-typedef enum { WB_GPS_LOCAL_COORDINATE = 0, WB_GPS_WGS84_COORDINATE } WbGpsCoordinateSystem;
+typedef enum {
+  WB_GPS_LOCAL_COORDINATE = 0,
+  WB_GPS_WGS84_COORDINATE
+} WbGpsCoordinateSystem;
 
 WbGpsCoordinateSystem wb_gps_get_coordinate_system(WbDeviceTag tag);
 

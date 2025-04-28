@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
+#include "device_private.h"
+#include "messages.h"
+#include "robot_private.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <webots/microphone.h>
 #include <webots/nodes.h>
-#include "device_private.h"
-#include "messages.h"
-#include "robot_private.h"
 
 typedef struct {
-  int enable : 1;       // need to enable device ?
-  int sampling_period;  // milliseconds
+  int enable : 1;      // need to enable device ?
+  int sampling_period; // milliseconds
   double aperture;
   double sensitivity;
-  void *sample;     // received sample
-  int sample_size;  // received sample size
+  void *sample;    // received sample
+  int sample_size; // received sample size
 } Microphone;
 
 static Microphone *microphone_create() {
@@ -57,20 +57,21 @@ static inline Microphone *microphone_get_struct(WbDeviceTag t) {
 static void microphone_read_answer(WbDevice *d, WbRequest *r) {
   Microphone *mic = (Microphone *)d->pdata;
   switch (request_read_uchar(r)) {
-    case C_CONFIGURE:
-      mic->aperture = request_read_double(r);
-      mic->sensitivity = request_read_double(r);
-      break;
+  case C_CONFIGURE:
+    mic->aperture = request_read_double(r);
+    mic->sensitivity = request_read_double(r);
+    break;
 
-    case C_MICROPHONE_RECEIVE:
-      mic->sample_size = request_read_int32(r);
-      free(mic->sample);
-      mic->sample = malloc(mic->sample_size);
-      memcpy(mic->sample, request_read_data(r, mic->sample_size), mic->sample_size);
-      break;
+  case C_MICROPHONE_RECEIVE:
+    mic->sample_size = request_read_int32(r);
+    free(mic->sample);
+    mic->sample = malloc(mic->sample_size);
+    memcpy(mic->sample, request_read_data(r, mic->sample_size),
+           mic->sample_size);
+    break;
 
-    default:
-      ROBOT_ASSERT(0);
+  default:
+    ROBOT_ASSERT(0);
   }
 }
 
@@ -79,7 +80,7 @@ static void microphone_write_request(WbDevice *d, WbRequest *r) {
   if (mic->enable) {
     request_write_uchar(r, C_SET_SAMPLING_PERIOD);
     request_write_uint16(r, mic->sampling_period);
-    mic->enable = 0;  // done
+    mic->enable = 0; // done
   }
 }
 
@@ -105,7 +106,8 @@ static void microphone_toggle_remote(WbDevice *d, WbRequest *r) {
     mic->enable = 1;
 }
 
-void wbr_microphone_set_buffer(WbDeviceTag t, const unsigned char *buffer, int size) {
+void wbr_microphone_set_buffer(WbDeviceTag t, const unsigned char *buffer,
+                               int size) {
   Microphone *mic = microphone_get_struct(t);
   if (mic) {
     mic->sample_size = size;
@@ -130,7 +132,8 @@ void wb_microphone_init(WbDevice *d) {
 
 void wb_microphone_enable(WbDeviceTag tag, int sampling_period) {
   if (sampling_period < 0) {
-    fprintf(stderr, "Error: %s() called with negative sampling period.\n", __FUNCTION__);
+    fprintf(stderr, "Error: %s() called with negative sampling period.\n",
+            __FUNCTION__);
     return;
   }
 
@@ -158,7 +161,10 @@ const void *wb_microphone_get_sample_data(WbDeviceTag tag) {
   const Microphone *mic = microphone_get_struct(tag);
   if (mic) {
     if (mic->sampling_period <= 0)
-      fprintf(stderr, "Error: %s() called for a disabled device! Please use: wb_microphone_enable().\n", __FUNCTION__);
+      fprintf(stderr,
+              "Error: %s() called for a disabled device! Please use: "
+              "wb_microphone_enable().\n",
+              __FUNCTION__);
     result = mic->sample;
   } else
     fprintf(stderr, "Error: %s(): invalid device tag.\n", __FUNCTION__);
@@ -172,7 +178,10 @@ int wb_microphone_get_sample_size(WbDeviceTag tag) {
   const Microphone *mic = microphone_get_struct(tag);
   if (mic) {
     if (mic->sampling_period <= 0)
-      fprintf(stderr, "Error: %s() called for a disabled device! Please use: wb_microphone_enable().\n", __FUNCTION__);
+      fprintf(stderr,
+              "Error: %s() called for a disabled device! Please use: "
+              "wb_microphone_enable().\n",
+              __FUNCTION__);
     result = mic->sample_size;
   } else
     fprintf(stderr, "Error: %s(): invalid device tag.\n", __FUNCTION__);

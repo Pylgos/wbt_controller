@@ -74,7 +74,8 @@ static void create_buffer(int size) {
 }
 
 static void throw_realloc_error() {
-  fprintf(stderr, "Error creating message to be sent to the robot window: not enough memory.\n");
+  fprintf(stderr, "Error creating message to be sent to the robot window: not "
+                  "enough memory.\n");
   exit(EXIT_FAILURE);
 }
 
@@ -140,7 +141,7 @@ static void buffer_append_escaped_string(const char *string) {
 
 static void buffer_append_double(double d) {
   char buf[32];
-  snprintf(buf, 32, "%.17g", d);  // so that we don't loose any precision
+  snprintf(buf, 32, "%.17g", d); // so that we don't loose any precision
   buffer_append(buf);
 }
 
@@ -154,36 +155,36 @@ static void buffer_append_int(int i) {
 
 static double update_period_by_type(WbNodeType type) {
   switch (type) {
-    case WB_NODE_CAMERA:
-    case WB_NODE_LIDAR:
-    case WB_NODE_RANGE_FINDER:
-      return 0.1;  // 100ms
-    default:
-      return 0.04;  // 40ms
+  case WB_NODE_CAMERA:
+  case WB_NODE_LIDAR:
+  case WB_NODE_RANGE_FINDER:
+    return 0.1; // 100ms
+  default:
+    return 0.04; // 40ms
   }
 }
 
 static double number_of_components(WbDeviceTag tag) {
   WbNodeType type = wb_device_get_node_type(tag);
   switch (type) {
-    case WB_NODE_ALTIMETER:
-    case WB_NODE_DISTANCE_SENSOR:
-    case WB_NODE_POSITION_SENSOR:
-    case WB_NODE_LIGHT_SENSOR:
-    case WB_NODE_LINEAR_MOTOR:
-    case WB_NODE_ROTATIONAL_MOTOR:
-    case WB_NODE_VACUUM_GRIPPER:
-      return 1;
-    case WB_NODE_ACCELEROMETER:
-    case WB_NODE_COMPASS:
-    case WB_NODE_GPS:
-    case WB_NODE_GYRO:
-    case WB_NODE_INERTIAL_UNIT:
-      return 3;
-    case WB_NODE_TOUCH_SENSOR:
-      return wb_touch_sensor_get_type(tag) == WB_TOUCH_SENSOR_FORCE3D ? 3 : 1;
-    default:
-      return 0;
+  case WB_NODE_ALTIMETER:
+  case WB_NODE_DISTANCE_SENSOR:
+  case WB_NODE_POSITION_SENSOR:
+  case WB_NODE_LIGHT_SENSOR:
+  case WB_NODE_LINEAR_MOTOR:
+  case WB_NODE_ROTATIONAL_MOTOR:
+  case WB_NODE_VACUUM_GRIPPER:
+    return 1;
+  case WB_NODE_ACCELEROMETER:
+  case WB_NODE_COMPASS:
+  case WB_NODE_GPS:
+  case WB_NODE_GYRO:
+  case WB_NODE_INERTIAL_UNIT:
+    return 3;
+  case WB_NODE_TOUCH_SENSOR:
+    return wb_touch_sensor_get_type(tag) == WB_TOUCH_SENSOR_FORCE3D ? 3 : 1;
+  default:
+    return 0;
   }
 }
 
@@ -191,7 +192,7 @@ struct UpdateElement {
   double last_update;
 
   int n_values;
-  int n_components;  // 1 for 1D value, 3 for 3D values, etc.
+  int n_components; // 1 for 1D value, 3 for 3D values, etc.
   double **values;
   double *times;
 };
@@ -206,7 +207,8 @@ static void ue_init(struct UpdateElement *ue, int n_components) {
   ue->times = NULL;
 }
 
-static void ue_append(struct UpdateElement *ue, double update_time, const double *value) {
+static void ue_append(struct UpdateElement *ue, double update_time,
+                      const double *value) {
   if (value == NULL)
     return;
 
@@ -215,7 +217,8 @@ static void ue_append(struct UpdateElement *ue, double update_time, const double
   if (ue->values == NULL)
     ue->values = (double **)malloc(sizeof(double *));
   else
-    ue->values = (double **)realloc(ue->values, ue->n_values * sizeof(double *));
+    ue->values =
+        (double **)realloc(ue->values, ue->n_values * sizeof(double *));
   if (ue->times == NULL)
     ue->times = (double *)malloc(sizeof(double));
   else
@@ -305,7 +308,8 @@ static void initialize_update_elements() {
   const int number_of_devices = wb_robot_get_number_of_devices();
   if (update_elements) {
     assert(number_of_devices > number_of_update_elements);
-    update_elements = realloc(update_elements, number_of_devices * sizeof(struct UpdateElement));
+    update_elements = realloc(update_elements,
+                              number_of_devices * sizeof(struct UpdateElement));
     if (!update_elements) {
       fprintf(stderr, "Error reinitializing list of devices.\n");
       exit(EXIT_FAILURE);
@@ -361,21 +365,21 @@ static void range_finder_configure(WbDeviceTag tag) {
 static void distance_sensor_configure(WbDeviceTag tag) {
   buffer_append(",\"sensorType\":\"");
   switch (wb_distance_sensor_get_type(tag)) {
-    case WB_DISTANCE_SENSOR_GENERIC:
-      buffer_append("generic");
-      break;
-    case WB_DISTANCE_SENSOR_INFRA_RED:
-      buffer_append("infra-red");
-      break;
-    case WB_DISTANCE_SENSOR_LASER:
-      buffer_append("laser");
-      break;
-    case WB_DISTANCE_SENSOR_SONAR:
-      buffer_append("sonar");
-      break;
-    default:
-      buffer_append("unknown");
-      break;
+  case WB_DISTANCE_SENSOR_GENERIC:
+    buffer_append("generic");
+    break;
+  case WB_DISTANCE_SENSOR_INFRA_RED:
+    buffer_append("infra-red");
+    break;
+  case WB_DISTANCE_SENSOR_LASER:
+    buffer_append("laser");
+    break;
+  case WB_DISTANCE_SENSOR_SONAR:
+    buffer_append("sonar");
+    break;
+  default:
+    buffer_append("unknown");
+    break;
   }
   buffer_append("\",\"minValue\":");
   buffer_append_double(wb_distance_sensor_get_min_value(tag));
@@ -393,16 +397,16 @@ static void motor_configure(WbDeviceTag tag) {
   buffer_append(",\"maxVelocity\":");
   buffer_append_double(wb_motor_get_max_velocity(tag));
   switch (wb_device_get_node_type(tag)) {
-    case WB_NODE_ROTATIONAL_MOTOR:
-      buffer_append(",\"maxTorque\":");
-      buffer_append_double(wb_motor_get_max_torque(tag));
-      break;
-    case WB_NODE_LINEAR_MOTOR:
-      buffer_append(",\"maxForce\":");
-      buffer_append_double(wb_motor_get_max_force(tag));
-      break;
-    default:
-      assert(0);
+  case WB_NODE_ROTATIONAL_MOTOR:
+    buffer_append(",\"maxTorque\":");
+    buffer_append_double(wb_motor_get_max_torque(tag));
+    break;
+  case WB_NODE_LINEAR_MOTOR:
+    buffer_append(",\"maxForce\":");
+    buffer_append_double(wb_motor_get_max_force(tag));
+    break;
+  default:
+    assert(0);
   }
 }
 
@@ -418,17 +422,17 @@ static void radar_configure(WbDeviceTag tag) {
 static void touch_sensor_configure(WbDeviceTag tag) {
   buffer_append(",\"sensorType\":\"");
   switch (wb_touch_sensor_get_type(tag)) {
-    case WB_TOUCH_SENSOR_BUMPER:
-      buffer_append("bumper");
-      break;
-    case WB_TOUCH_SENSOR_FORCE:
-      buffer_append("force");
-      break;
-    case WB_TOUCH_SENSOR_FORCE3D:
-      buffer_append("force-3d");
-      break;
-    default:
-      assert(0);
+  case WB_TOUCH_SENSOR_BUMPER:
+    buffer_append("bumper");
+    break;
+  case WB_TOUCH_SENSOR_FORCE:
+    buffer_append("force");
+    break;
+  case WB_TOUCH_SENSOR_FORCE3D:
+    buffer_append("force-3d");
+    break;
+  default:
+    assert(0);
   }
   buffer_append("\"");
 }
@@ -457,30 +461,30 @@ void wbu_default_robot_window_configure() {
       buffer_append_escaped_string(wb_device_get_model(tag));
       buffer_append("\"");
       switch (type) {
-        case WB_NODE_CAMERA:
-          camera_configure(tag);
-          break;
-        case WB_NODE_DISTANCE_SENSOR:
-          distance_sensor_configure(tag);
-          break;
-        case WB_NODE_LIDAR:
-          lidar_configure(tag);
-          break;
-        case WB_NODE_RADAR:
-          radar_configure(tag);
-          break;
-        case WB_NODE_RANGE_FINDER:
-          range_finder_configure(tag);
-          break;
-        case WB_NODE_ROTATIONAL_MOTOR:
-        case WB_NODE_LINEAR_MOTOR:
-          motor_configure(tag);
-          break;
-        case WB_NODE_TOUCH_SENSOR:
-          touch_sensor_configure(tag);
-          break;
-        default:
-          break;
+      case WB_NODE_CAMERA:
+        camera_configure(tag);
+        break;
+      case WB_NODE_DISTANCE_SENSOR:
+        distance_sensor_configure(tag);
+        break;
+      case WB_NODE_LIDAR:
+        lidar_configure(tag);
+        break;
+      case WB_NODE_RADAR:
+        radar_configure(tag);
+        break;
+      case WB_NODE_RANGE_FINDER:
+        range_finder_configure(tag);
+        break;
+      case WB_NODE_ROTATIONAL_MOTOR:
+      case WB_NODE_LINEAR_MOTOR:
+        motor_configure(tag);
+        break;
+      case WB_NODE_TOUCH_SENSOR:
+        touch_sensor_configure(tag);
+        break;
+      default:
+        break;
       }
       buffer_append("}");
     }
@@ -491,7 +495,10 @@ void wbu_default_robot_window_configure() {
   free_buffer();
 }
 
-static void append_rescaled_image_to_buffer_and_free_data(GImage *img, int new_width, int new_height, float max_range) {
+static void append_rescaled_image_to_buffer_and_free_data(GImage *img,
+                                                          int new_width,
+                                                          int new_height,
+                                                          float max_range) {
   unsigned char *jpeg_data = NULL;
   char *base64_data = NULL;
 
@@ -502,7 +509,8 @@ static void append_rescaled_image_to_buffer_and_free_data(GImage *img, int new_w
   else {
     // 2. Convert to JPEG.
     unsigned long jpeg_data_size = 0;
-    success = g_image_save_to_jpeg_buffer(img, &jpeg_data, &jpeg_data_size, 100);
+    success =
+        g_image_save_to_jpeg_buffer(img, &jpeg_data, &jpeg_data_size, 100);
     if (jpeg_data == NULL || success != 0)
       assert(0);
     else {
@@ -535,10 +543,13 @@ static void camera_update(WbDeviceTag tag) {
 
   if (wb_camera_has_recognition(tag)) {
     buffer_append("\"recognitionEnabled\":");
-    buffer_append(wb_camera_recognition_get_sampling_period(tag) > 0 ? "true" : "false");
+    buffer_append(wb_camera_recognition_get_sampling_period(tag) > 0 ? "true"
+                                                                     : "false");
     if (wb_camera_recognition_has_segmentation(tag)) {
       buffer_append(",\"segmentationEnabled\":");
-      buffer_append(wb_camera_recognition_is_segmentation_enabled(tag) ? "true" : "false");
+      buffer_append(wb_camera_recognition_is_segmentation_enabled(tag)
+                        ? "true"
+                        : "false");
     }
     buffer_append(",");
   }
@@ -575,7 +586,8 @@ static void camera_update(WbDeviceTag tag) {
   img.failed = 0;
   img.flipped = 0;
 
-  append_rescaled_image_to_buffer_and_free_data(&img, new_width, new_height, 0.0f);
+  append_rescaled_image_to_buffer_and_free_data(&img, new_width, new_height,
+                                                0.0f);
 }
 
 static void lidar_update(WbDeviceTag tag) {
@@ -597,7 +609,8 @@ static void lidar_update(WbDeviceTag tag) {
   int new_height = lidar_height;
 
   if (images_max_width > 0) {
-    // assumption: no need to rescale along the height, because nLayers is small enough.
+    // assumption: no need to rescale along the height, because nLayers is small
+    // enough.
     assert(lidar_height < images_max_height);
     new_width = MIN(lidar_width, images_max_width);
   }
@@ -611,7 +624,8 @@ static void lidar_update(WbDeviceTag tag) {
   img.failed = 0;
   img.flipped = 0;
 
-  append_rescaled_image_to_buffer_and_free_data(&img, new_width, new_height, wb_lidar_get_max_range(tag));
+  append_rescaled_image_to_buffer_and_free_data(&img, new_width, new_height,
+                                                wb_lidar_get_max_range(tag));
 }
 
 static void range_finder_update(WbDeviceTag tag) {
@@ -650,71 +664,87 @@ static void range_finder_update(WbDeviceTag tag) {
   img.failed = 0;
   img.flipped = 0;
 
-  append_rescaled_image_to_buffer_and_free_data(&img, new_width, new_height, wb_range_finder_get_max_range(tag));
+  append_rescaled_image_to_buffer_and_free_data(
+      &img, new_width, new_height, wb_range_finder_get_max_range(tag));
 }
 
-static void accelerometer_collect_value(WbDeviceTag tag, struct UpdateElement *ue, double update_time) {
+static void accelerometer_collect_value(WbDeviceTag tag,
+                                        struct UpdateElement *ue,
+                                        double update_time) {
   if (wb_accelerometer_get_sampling_period(tag) <= 0)
     return;
   const double *values = wb_accelerometer_get_values(tag);
   ue_append(ue, update_time, values);
 }
 
-static void altimeter_collect_value(WbDeviceTag tag, struct UpdateElement *ue, double update_time) {
+static void altimeter_collect_value(WbDeviceTag tag, struct UpdateElement *ue,
+                                    double update_time) {
   if (wb_altimeter_get_sampling_period(tag) <= 0)
     return;
   const double value = wb_altimeter_get_value(tag);
   ue_append(ue, update_time, &value);
 }
 
-static void compass_collect_value(WbDeviceTag tag, struct UpdateElement *ue, double update_time) {
+static void compass_collect_value(WbDeviceTag tag, struct UpdateElement *ue,
+                                  double update_time) {
   if (wb_compass_get_sampling_period(tag) <= 0)
     return;
   const double *values = wb_compass_get_values(tag);
   ue_append(ue, update_time, values);
 }
 
-static void distance_sensor_collect_value(WbDeviceTag tag, struct UpdateElement *ue, double update_time) {
+static void distance_sensor_collect_value(WbDeviceTag tag,
+                                          struct UpdateElement *ue,
+                                          double update_time) {
   if (wb_distance_sensor_get_sampling_period(tag) <= 0)
     return;
   double value = wb_distance_sensor_get_value(tag);
   ue_append(ue, update_time, &value);
 }
 
-static void gps_collect_value(WbDeviceTag tag, struct UpdateElement *ue, double update_time) {
+static void gps_collect_value(WbDeviceTag tag, struct UpdateElement *ue,
+                              double update_time) {
   if (wb_gps_get_sampling_period(tag) <= 0)
     return;
   const double *values = wb_gps_get_values(tag);
   ue_append(ue, update_time, values);
 }
 
-static void gyro_collect_value(WbDeviceTag tag, struct UpdateElement *ue, double update_time) {
+static void gyro_collect_value(WbDeviceTag tag, struct UpdateElement *ue,
+                               double update_time) {
   if (wb_gyro_get_sampling_period(tag) <= 0)
     return;
   const double *values = wb_gyro_get_values(tag);
   ue_append(ue, update_time, values);
 }
 
-static void inertial_unit_collect_value(WbDeviceTag tag, struct UpdateElement *ue, double update_time) {
+static void inertial_unit_collect_value(WbDeviceTag tag,
+                                        struct UpdateElement *ue,
+                                        double update_time) {
   if (wb_inertial_unit_get_sampling_period(tag) <= 0)
     return;
   const double *values = wb_inertial_unit_get_roll_pitch_yaw(tag);
   ue_append(ue, update_time, values);
 }
 
-static void light_sensor_collect_value(WbDeviceTag tag, struct UpdateElement *ue, double update_time) {
+static void light_sensor_collect_value(WbDeviceTag tag,
+                                       struct UpdateElement *ue,
+                                       double update_time) {
   if (wb_light_sensor_get_sampling_period(tag) <= 0)
     return;
   double value = wb_light_sensor_get_value(tag);
   ue_append(ue, update_time, &value);
 }
 
-static void motor_collect_value(WbDeviceTag tag, struct UpdateElement *ue, double update_time) {
+static void motor_collect_value(WbDeviceTag tag, struct UpdateElement *ue,
+                                double update_time) {
   double value = wb_motor_get_target_position(tag);
   ue_append(ue, update_time, &value);
 }
 
-static void position_sensor_collect_value(WbDeviceTag tag, struct UpdateElement *ue, double update_time) {
+static void position_sensor_collect_value(WbDeviceTag tag,
+                                          struct UpdateElement *ue,
+                                          double update_time) {
   if (wb_position_sensor_get_sampling_period(tag) <= 0)
     return;
   double value = wb_position_sensor_get_value(tag);
@@ -738,7 +768,9 @@ static void radar_update(WbDeviceTag tag) {
   buffer_append("]");
 }
 
-static void touch_sensor_collect_value(WbDeviceTag tag, struct UpdateElement *ue, double update_time) {
+static void touch_sensor_collect_value(WbDeviceTag tag,
+                                       struct UpdateElement *ue,
+                                       double update_time) {
   if (wb_touch_sensor_get_sampling_period(tag) <= 0)
     return;
   if (wb_touch_sensor_get_type(tag) == WB_TOUCH_SENSOR_FORCE3D) {
@@ -750,7 +782,9 @@ static void touch_sensor_collect_value(WbDeviceTag tag, struct UpdateElement *ue
   }
 }
 
-static void vacuum_gripper_collect_value(WbDeviceTag tag, struct UpdateElement *ue, double update_time) {
+static void vacuum_gripper_collect_value(WbDeviceTag tag,
+                                         struct UpdateElement *ue,
+                                         double update_time) {
   if (wb_vacuum_gripper_get_presence_sampling_period(tag) <= 0)
     return;
   const double value = wb_vacuum_gripper_get_presence(tag) ? 1.0 : 0.0;
@@ -768,7 +802,7 @@ static void vacuum_gripper_update(WbDeviceTag tag, struct UpdateElement *ue) {
 
 void wbu_default_robot_window_update() {
   if (buffer != NULL)
-    return;  // prevent to mix 2 updates.
+    return; // prevent to mix 2 updates.
 
   const int n = wb_robot_get_number_of_devices();
   if (update_elements == NULL || n > number_of_update_elements) {
@@ -793,49 +827,50 @@ void wbu_default_robot_window_update() {
 
       // store values to be sent later if required.
       switch (type) {
-        case WB_NODE_ROTATIONAL_MOTOR:
-        case WB_NODE_LINEAR_MOTOR:
-          motor_collect_value(tag, update_element, simulated_time);
-          break;
-        case WB_NODE_ACCELEROMETER:
-          accelerometer_collect_value(tag, update_element, simulated_time);
-          break;
-        case WB_NODE_ALTIMETER:
-          altimeter_collect_value(tag, update_element, simulated_time);
-          break;
-        case WB_NODE_COMPASS:
-          compass_collect_value(tag, update_element, simulated_time);
-          break;
-        case WB_NODE_DISTANCE_SENSOR:
-          distance_sensor_collect_value(tag, update_element, simulated_time);
-          break;
-        case WB_NODE_GPS:
-          gps_collect_value(tag, update_element, simulated_time);
-          break;
-        case WB_NODE_GYRO:
-          gyro_collect_value(tag, update_element, simulated_time);
-          break;
-        case WB_NODE_INERTIAL_UNIT:
-          inertial_unit_collect_value(tag, update_element, simulated_time);
-          break;
-        case WB_NODE_LIGHT_SENSOR:
-          light_sensor_collect_value(tag, update_element, simulated_time);
-          break;
-        case WB_NODE_POSITION_SENSOR:
-          position_sensor_collect_value(tag, update_element, simulated_time);
-          break;
-        case WB_NODE_TOUCH_SENSOR:
-          touch_sensor_collect_value(tag, update_element, simulated_time);
-          break;
-        case WB_NODE_VACUUM_GRIPPER:
-          vacuum_gripper_collect_value(tag, update_element, simulated_time);
-          break;
-        default:
-          break;
+      case WB_NODE_ROTATIONAL_MOTOR:
+      case WB_NODE_LINEAR_MOTOR:
+        motor_collect_value(tag, update_element, simulated_time);
+        break;
+      case WB_NODE_ACCELEROMETER:
+        accelerometer_collect_value(tag, update_element, simulated_time);
+        break;
+      case WB_NODE_ALTIMETER:
+        altimeter_collect_value(tag, update_element, simulated_time);
+        break;
+      case WB_NODE_COMPASS:
+        compass_collect_value(tag, update_element, simulated_time);
+        break;
+      case WB_NODE_DISTANCE_SENSOR:
+        distance_sensor_collect_value(tag, update_element, simulated_time);
+        break;
+      case WB_NODE_GPS:
+        gps_collect_value(tag, update_element, simulated_time);
+        break;
+      case WB_NODE_GYRO:
+        gyro_collect_value(tag, update_element, simulated_time);
+        break;
+      case WB_NODE_INERTIAL_UNIT:
+        inertial_unit_collect_value(tag, update_element, simulated_time);
+        break;
+      case WB_NODE_LIGHT_SENSOR:
+        light_sensor_collect_value(tag, update_element, simulated_time);
+        break;
+      case WB_NODE_POSITION_SENSOR:
+        position_sensor_collect_value(tag, update_element, simulated_time);
+        break;
+      case WB_NODE_TOUCH_SENSOR:
+        touch_sensor_collect_value(tag, update_element, simulated_time);
+        break;
+      case WB_NODE_VACUUM_GRIPPER:
+        vacuum_gripper_collect_value(tag, update_element, simulated_time);
+        break;
+      default:
+        break;
       }
 
       if (robot_get_simulation_mode() == WB_SUPERVISOR_SIMULATION_MODE_PAUSE ||
-          update_element->last_update + update_period_by_type(type) < simulated_time) {
+          update_element->last_update + update_period_by_type(type) <
+              simulated_time) {
         // send the stored values if any.
         update_element->last_update = simulated_time;
         if (updated_device > 0)
@@ -845,37 +880,37 @@ void wbu_default_robot_window_update() {
         buffer_append_escaped_string(wb_device_get_name(tag));
         buffer_append("\":{");
         switch (type) {
-          case WB_NODE_ACCELEROMETER:
-          case WB_NODE_ALTIMETER:
-          case WB_NODE_COMPASS:
-          case WB_NODE_DISTANCE_SENSOR:
-          case WB_NODE_GPS:
-          case WB_NODE_GYRO:
-          case WB_NODE_INERTIAL_UNIT:
-          case WB_NODE_LIGHT_SENSOR:
-          case WB_NODE_LINEAR_MOTOR:
-          case WB_NODE_POSITION_SENSOR:
-          case WB_NODE_ROTATIONAL_MOTOR:
-          case WB_NODE_TOUCH_SENSOR:
-            ue_write_values(update_element);
-            break;
-          case WB_NODE_CAMERA:
-            camera_update(tag);
-            break;
-          case WB_NODE_LIDAR:
-            lidar_update(tag);
-            break;
-          case WB_NODE_RADAR:
-            radar_update(tag);
-            break;
-          case WB_NODE_RANGE_FINDER:
-            range_finder_update(tag);
-            break;
-          case WB_NODE_VACUUM_GRIPPER:
-            vacuum_gripper_update(tag, update_element);
-            break;
-          default:
-            break;
+        case WB_NODE_ACCELEROMETER:
+        case WB_NODE_ALTIMETER:
+        case WB_NODE_COMPASS:
+        case WB_NODE_DISTANCE_SENSOR:
+        case WB_NODE_GPS:
+        case WB_NODE_GYRO:
+        case WB_NODE_INERTIAL_UNIT:
+        case WB_NODE_LIGHT_SENSOR:
+        case WB_NODE_LINEAR_MOTOR:
+        case WB_NODE_POSITION_SENSOR:
+        case WB_NODE_ROTATIONAL_MOTOR:
+        case WB_NODE_TOUCH_SENSOR:
+          ue_write_values(update_element);
+          break;
+        case WB_NODE_CAMERA:
+          camera_update(tag);
+          break;
+        case WB_NODE_LIDAR:
+          lidar_update(tag);
+          break;
+        case WB_NODE_RADAR:
+          radar_update(tag);
+          break;
+        case WB_NODE_RANGE_FINDER:
+          range_finder_update(tag);
+          break;
+        case WB_NODE_VACUUM_GRIPPER:
+          vacuum_gripper_update(tag, update_element);
+          break;
+        default:
+          break;
         }
         buffer_append("}");
       }
@@ -887,7 +922,8 @@ void wbu_default_robot_window_update() {
   free_buffer();
 }
 
-void wbu_default_robot_window_set_images_max_size(int max_width, int max_height) {
+void wbu_default_robot_window_set_images_max_size(int max_width,
+                                                  int max_height) {
   assert(max_width > 0);
   assert(max_height > 0);
   images_max_width = max_width;

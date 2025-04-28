@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for Motion file playback          */
+/* Description:  Webots C programming interface for Motion file playback */
 /**********************************************************************************/
 
 #ifndef WBU_MOTION_H

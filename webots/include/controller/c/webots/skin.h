@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the Skin node                 */
+/* Description:  Webots C programming interface for the Skin node */
 /**********************************************************************************/
 
 #ifndef WB_SKIN_H
@@ -28,12 +28,16 @@
 extern "C" {
 #endif
 
-void wb_skin_set_bone_orientation(WbDeviceTag tag, int index, const double orientation[4], bool absolute);
-void wb_skin_set_bone_position(WbDeviceTag tag, int index, const double position[3], bool absolute);
+void wb_skin_set_bone_orientation(WbDeviceTag tag, int index,
+                                  const double orientation[4], bool absolute);
+void wb_skin_set_bone_position(WbDeviceTag tag, int index,
+                               const double position[3], bool absolute);
 int wb_skin_get_bone_count(WbDeviceTag tag);
 const char *wb_skin_get_bone_name(WbDeviceTag tag, int index);
-const double *wb_skin_get_bone_orientation(WbDeviceTag tag, int index, bool absolute);
-const double *wb_skin_get_bone_position(WbDeviceTag tag, int index, bool absolute);
+const double *wb_skin_get_bone_orientation(WbDeviceTag tag, int index,
+                                           bool absolute);
+const double *wb_skin_get_bone_position(WbDeviceTag tag, int index,
+                                        bool absolute);
 
 #ifdef __cplusplus
 }

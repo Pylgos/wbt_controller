@@ -13,12 +13,12 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/device.h>
-#include <webots/position_sensor.h>
 #include <webots/Brake.hpp>
 #include <webots/Motor.hpp>
 #include <webots/PositionSensor.hpp>
 #include <webots/Robot.hpp>
+#include <webots/device.h>
+#include <webots/position_sensor.h>
 
 using namespace webots;
 
@@ -26,9 +26,7 @@ void PositionSensor::enable(int sampling_period) {
   wb_position_sensor_enable(getTag(), sampling_period);
 }
 
-void PositionSensor::disable() {
-  wb_position_sensor_disable(getTag());
-}
+void PositionSensor::disable() { wb_position_sensor_disable(getTag()); }
 
 int PositionSensor::getSamplingPeriod() const {
   return wb_position_sensor_get_sampling_period(getTag());

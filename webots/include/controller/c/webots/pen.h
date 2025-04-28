@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the Pen node                  */
+/* Description:  Webots C programming interface for the Pen node */
 /**********************************************************************************/
 
 #ifndef WB_PEN_H
@@ -28,8 +28,9 @@
 extern "C" {
 #endif
 
-void wb_pen_write(WbDeviceTag tag, bool write);                         // switch on/off writing
-void wb_pen_set_ink_color(WbDeviceTag tag, int color, double density);  // set ink color
+void wb_pen_write(WbDeviceTag tag, bool write); // switch on/off writing
+void wb_pen_set_ink_color(WbDeviceTag tag, int color,
+                          double density); // set ink color
 
 #ifdef __cplusplus
 }

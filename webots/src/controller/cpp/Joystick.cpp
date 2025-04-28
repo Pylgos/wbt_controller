@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/joystick.h>
 #include <webots/Joystick.hpp>
+#include <webots/joystick.h>
 
 using namespace webots;
 
@@ -22,17 +22,13 @@ void Joystick::enable(int sampling_period) {
   wb_joystick_enable(sampling_period);
 }
 
-void Joystick::disable() {
-  wb_joystick_disable();
-}
+void Joystick::disable() { wb_joystick_disable(); }
 
 int Joystick::getSamplingPeriod() const {
   return wb_joystick_get_sampling_period();
 }
 
-bool Joystick::isConnected() const {
-  return wb_joystick_is_connected();
-}
+bool Joystick::isConnected() const { return wb_joystick_is_connected(); }
 
 std::string Joystick::getModel() const {
   const char *model = wb_joystick_get_model();
@@ -75,6 +71,4 @@ void Joystick::setResistanceGain(double gain) {
   wb_joystick_set_resistance_gain(gain);
 }
 
-void Joystick::setForceAxis(int axis) {
-  wb_joystick_set_force_axis(axis);
-}
+void Joystick::setForceAxis(int axis) { wb_joystick_set_force_axis(axis); }

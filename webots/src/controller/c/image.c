@@ -16,12 +16,12 @@
 
 #include "image_private.h"
 
-#include <webots/robot.h>
 #include "robot_private.h"
+#include <webots/robot.h>
 
 #ifdef _WIN32
 #include <windows.h>
-#else  // memory mapped files
+#else // memory mapped files
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -65,9 +65,10 @@ void image_get(Image *i) {
   i->fd = OpenFileMapping(FILE_MAP_WRITE, FALSE, i->filename);
   ROBOT_ASSERT(i->fd);
   i->data = MapViewOfFile(i->fd, FILE_MAP_WRITE, 0, 0, 0);
-#else  // memory mapped files
+#else // memory mapped files
   int fd = open(i->filename, O_RDWR, 0400);
-  i->data = (unsigned char *)mmap(0, i->size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  i->data = (unsigned char *)mmap(0, i->size, PROT_READ | PROT_WRITE,
+                                  MAP_SHARED, fd, 0);
   close(fd);
 #endif
   ROBOT_ASSERT(i->data);

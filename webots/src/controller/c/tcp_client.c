@@ -40,7 +40,8 @@ int tcp_client_new(const char *host, int port, char *buffer) {
     return -1;
 
   const int connect = tcp_client_connect(fd, host, port, buffer);
-  if (connect == -1 || connect == 0) {  // Failed to lookup host or connection failed
+  if (connect == -1 ||
+      connect == 0) { // Failed to lookup host or connection failed
     tcp_client_close(fd);
     return -1;
   }
@@ -51,7 +52,7 @@ int tcp_client_open(char *buffer) {
 #ifdef _WIN32
   // initialize the socket API if needed
   WSADATA info;
-  if (WSAStartup(MAKEWORD(1, 1), &info) != 0) {  // Winsock 1.1
+  if (WSAStartup(MAKEWORD(1, 1), &info) != 0) { // Winsock 1.1
     snprintf(buffer, ERROR_BUFFER_SIZE, "Cannot initialize Winsock");
     return -1;
   }
@@ -75,13 +76,15 @@ int tcp_client_connect(int fd, const char *host, int port, char *buffer) {
   server = gethostbyname(host);
 
   if (server)
-    memcpy((char *)&address.sin_addr.s_addr, (char *)server->h_addr, server->h_length);
+    memcpy((char *)&address.sin_addr.s_addr, (char *)server->h_addr,
+           server->h_length);
   else {
     snprintf(buffer, ERROR_BUFFER_SIZE, "Cannot resolve server name: %s", host);
     return -1;
   }
   /* connect to the server */
-  const int rc = connect(fd, (struct sockaddr *)&address, sizeof(struct sockaddr));
+  const int rc =
+      connect(fd, (struct sockaddr *)&address, sizeof(struct sockaddr));
   if (rc == -1) {
     snprintf(buffer, ERROR_BUFFER_SIZE, "Cannot connect to Webots instance");
     return 0;

@@ -29,4 +29,4 @@ void robot_window_write_actuators();
 void robot_window_cleanup();
 void robot_window_show();
 
-#endif  // ROBOT_WINDOW_H
+#endif // ROBOT_WINDOW_H

@@ -26,7 +26,7 @@
 
 struct _WbRequest {
   int pointer;
-  int size;  // size of the memory chunk
+  int size; // size of the memory chunk
   char *data;
   bool immediate;
 };
@@ -59,16 +59,16 @@ unsigned int request_read_uint32(WbRequest *);
 float request_read_float(WbRequest *);
 double request_read_double(WbRequest *);
 void *request_read_data(WbRequest *, int size);
-char *request_read_string(WbRequest *);  // to be released with g_free
+char *request_read_string(WbRequest *); // to be released with g_free
 bool request_is_over(WbRequest *);
 int request_get_size(WbRequest *);
 int request_get_position(const WbRequest *);
 void request_set_position(WbRequest *, int pos);
 void request_set_immediate(WbRequest *, bool immediate);
 bool request_is_immediate(const WbRequest *);
-void request_print(FILE *fd, WbRequest *);  // for debug
+void request_print(FILE *fd, WbRequest *); // for debug
 
 #define request_read_char(r) ((r)->data[(r)->pointer++])
 #define request_read_uchar(r) (*((unsigned char *)&((r)->data[(r)->pointer++])))
 
-#endif  // REQUEST_H
+#endif // REQUEST_H

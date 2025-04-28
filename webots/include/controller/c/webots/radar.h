@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the Radar node                */
+/* Description:  Webots C programming interface for the Radar node */
 /**********************************************************************************/
 
 #ifndef WB_RADAR_H

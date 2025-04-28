@@ -18,13 +18,13 @@
 // this file contains the API interface for the Brake device
 //***************************************************************************
 
+#include "messages.h"
+#include "robot_private.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <webots/brake.h>
 #include <webots/nodes.h>
-#include "messages.h"
-#include "robot_private.h"
 
 typedef struct {
   int state;
@@ -60,22 +60,22 @@ static void brake_write_request(WbDevice *d, WbRequest *r) {
       request_write_uint16(r, b->requested_device_type);
       b->requested_device_type = 0;
     }
-    b->state = 0;  // clear it for next time
+    b->state = 0; // clear it for next time
   }
 }
 
 static void brake_read_answer(WbDevice *d, WbRequest *r) {
   Brake *b = (Brake *)d->pdata;
   switch (request_read_uchar(r)) {
-    case C_CONFIGURE:
-      b->type = request_read_int32(r);
-      break;
-    case C_BRAKE_GET_ASSOCIATED_DEVICE:
-      b->requested_device_tag = request_read_uint16(r);
-      break;
-    default:
-      ROBOT_ASSERT(0);  // should not be reached
-      break;
+  case C_CONFIGURE:
+    b->type = request_read_int32(r);
+    break;
+  case C_BRAKE_GET_ASSOCIATED_DEVICE:
+    b->requested_device_tag = request_read_uint16(r);
+    break;
+  default:
+    ROBOT_ASSERT(0); // should not be reached
+    break;
   }
 }
 
@@ -100,7 +100,8 @@ void wb_brake_init(WbDevice *d) {
 
 // Public functions (available from the user API)
 
-void wb_brake_set_damping_constant_no_mutex(WbDeviceTag tag, double damping_constant) {
+void wb_brake_set_damping_constant_no_mutex(WbDeviceTag tag,
+                                            double damping_constant) {
   Brake *b = brake_get_struct(tag);
   if (b) {
     b->state |= C_BRAKE_SET_DAMPING_CONSTANT;
@@ -111,7 +112,10 @@ void wb_brake_set_damping_constant_no_mutex(WbDeviceTag tag, double damping_cons
 
 void wb_brake_set_damping_constant(WbDeviceTag tag, double damping_constant) {
   if (isnan(damping_constant)) {
-    fprintf(stderr, "Error: %s() called with an invalid 'damping_constant' argument (NaN).\n", __FUNCTION__);
+    fprintf(stderr,
+            "Error: %s() called with an invalid 'damping_constant' argument "
+            "(NaN).\n",
+            __FUNCTION__);
     return;
   }
 
@@ -138,7 +142,8 @@ WbJointType wb_brake_get_type(WbDeviceTag tag) {
   return type;
 }
 
-static WbDeviceTag brake_get_associated_device(WbDeviceTag t, int device_type, const char *function_name) {
+static WbDeviceTag brake_get_associated_device(WbDeviceTag t, int device_type,
+                                               const char *function_name) {
   Brake *b = brake_get_struct(t);
   if (!b) {
     fprintf(stderr, "Error: %s(): invalid device tag.\n", function_name);
@@ -156,9 +161,11 @@ static WbDeviceTag brake_get_associated_device(WbDeviceTag t, int device_type, c
 
 WbDeviceTag wb_brake_get_motor(WbDeviceTag tag) {
   // this function works for both linear and rotational motors
-  return brake_get_associated_device(tag, WB_NODE_ROTATIONAL_MOTOR, __FUNCTION__);
+  return brake_get_associated_device(tag, WB_NODE_ROTATIONAL_MOTOR,
+                                     __FUNCTION__);
 }
 
 WbDeviceTag wb_brake_get_position_sensor(WbDeviceTag tag) {
-  return brake_get_associated_device(tag, WB_NODE_POSITION_SENSOR, __FUNCTION__);
+  return brake_get_associated_device(tag, WB_NODE_POSITION_SENSOR,
+                                     __FUNCTION__);
 }

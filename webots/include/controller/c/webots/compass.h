@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the Compass node              */
+/* Description:  Webots C programming interface for the Compass node */
 /**********************************************************************************/
 
 #ifndef WB_COMPASS_H

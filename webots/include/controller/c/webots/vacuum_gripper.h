@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the VacuumGripper node            */
+/* Description:  Webots C programming interface for the VacuumGripper node */
 /**********************************************************************************/
 
 #ifndef WB_VACUUM_GRIPPER_H

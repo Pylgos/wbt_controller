@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/altimeter.h>
 #include <webots/Altimeter.hpp>
+#include <webots/altimeter.h>
 
 #include <cstdlib>
 
@@ -25,14 +25,10 @@ void Altimeter::enable(int sampling_period) {
   wb_altimeter_enable(getTag(), sampling_period);
 }
 
-void Altimeter::disable() {
-  wb_altimeter_disable(getTag());
-}
+void Altimeter::disable() { wb_altimeter_disable(getTag()); }
 
 int Altimeter::getSamplingPeriod() const {
   return wb_altimeter_get_sampling_period(getTag());
 }
 
-double Altimeter::getValue() const {
-  return wb_altimeter_get_value(getTag());
-}
+double Altimeter::getValue() const { return wb_altimeter_get_value(getTag()); }

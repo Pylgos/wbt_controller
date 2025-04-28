@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the Connector node            */
+/* Description:  Webots C programming interface for the Connector node */
 /**********************************************************************************/
 
 #ifndef WB_CONNECTOR_H

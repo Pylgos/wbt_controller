@@ -19,7 +19,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#endif  // _WIN32
+#endif // _WIN32
 #include <stdlib.h>
 
 #ifdef __cplusplus
@@ -34,7 +34,7 @@ struct _GPipe {
   int pointer;
   int read;
   int buffer_size;
-  int fd_local[2];  // for the local pipe
+  int fd_local[2]; // for the local pipe
 #else
   int handle;
 #endif
@@ -42,7 +42,8 @@ struct _GPipe {
 
 typedef struct _GPipe GPipe;
 
-GPipe *g_pipe_new(const char *);  // named pipe on Windows, UNIX domain socket on Linux / macOS
+GPipe *g_pipe_new(
+    const char *); // named pipe on Windows, UNIX domain socket on Linux / macOS
 void g_pipe_delete(GPipe *);
 void g_pipe_send(GPipe *, const char *data, int size);
 int g_pipe_receive(GPipe *, char *data, int size);
@@ -52,4 +53,4 @@ size_t g_pipe_get_handle(const GPipe *);
 }
 #endif
 
-#endif  // G_PIPE_H
+#endif // G_PIPE_H

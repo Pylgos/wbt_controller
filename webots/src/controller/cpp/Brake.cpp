@@ -13,18 +13,16 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/brake.h>
-#include <webots/device.h>
 #include <webots/Brake.hpp>
 #include <webots/Motor.hpp>
 #include <webots/PositionSensor.hpp>
 #include <webots/Robot.hpp>
+#include <webots/brake.h>
+#include <webots/device.h>
 
 using namespace webots;
 
-Brake::Type Brake::getType() const {
-  return Type(wb_brake_get_type(getTag()));
-}
+Brake::Type Brake::getType() const { return Type(wb_brake_get_type(getTag())); }
 
 void Brake::setDampingConstant(double dampingConstant) const {
   wb_brake_set_damping_constant(getTag(), dampingConstant);
@@ -36,13 +34,12 @@ Motor *Brake::getMotor() {
   return motor;
 }
 
-int Brake::getMotorTag() const {
-  return wb_brake_get_motor(getTag());
-}
+int Brake::getMotorTag() const { return wb_brake_get_motor(getTag()); }
 
 PositionSensor *Brake::getPositionSensor() {
   if (positionSensor == NULL)
-    positionSensor = dynamic_cast<PositionSensor *>(Robot::getDeviceFromTag(getPositionSensorTag()));
+    positionSensor = dynamic_cast<PositionSensor *>(
+        Robot::getDeviceFromTag(getPositionSensorTag()));
   return positionSensor;
 }
 

@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/inertial_unit.h>
 #include <webots/InertialUnit.hpp>
+#include <webots/inertial_unit.h>
 
 using namespace webots;
 
@@ -22,9 +22,7 @@ void InertialUnit::enable(int sampling_period) {
   wb_inertial_unit_enable(getTag(), sampling_period);
 }
 
-void InertialUnit::disable() {
-  wb_inertial_unit_disable(getTag());
-}
+void InertialUnit::disable() { wb_inertial_unit_disable(getTag()); }
 
 int InertialUnit::getSamplingPeriod() const {
   return wb_inertial_unit_get_sampling_period(getTag());

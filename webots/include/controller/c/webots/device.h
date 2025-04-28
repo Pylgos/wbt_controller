@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Abstraction of a robot device                                    */
+/* Description:  Abstraction of a robot device */
 /**********************************************************************************/
 
 #ifndef WB_DEVICE_H

@@ -13,14 +13,12 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/pen.h>
 #include <webots/Pen.hpp>
+#include <webots/pen.h>
 
 using namespace webots;
 
-void Pen::write(bool write) {
-  wb_pen_write(getTag(), write);
-}
+void Pen::write(bool write) { wb_pen_write(getTag(), write); }
 
 void Pen::setInkColor(int color, double density) {
   wb_pen_set_ink_color(getTag(), color, density);

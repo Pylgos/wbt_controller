@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the Microphone node           */
+/* Description:  Webots C programming interface for the Microphone node */
 /**********************************************************************************/
 
 #ifndef WB_MICROPHONE_H

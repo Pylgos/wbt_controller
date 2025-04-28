@@ -29,12 +29,12 @@
 typedef struct {
   bool enable;
   int sampling_period;
-  unsigned int unique_id;  // camera id
+  unsigned int unique_id; // camera id
   int width;
   int height;
   double camnear;
   bool planar;
-  double fov;  // in degrees
+  double fov; // in degrees
   int mode;
   void *pdata;
   Image *image;
@@ -42,10 +42,12 @@ typedef struct {
 
 void wb_abstract_camera_cleanup(WbDevice *d);
 
-void wb_abstract_camera_new(WbDevice *d, unsigned int id, int w, int h, double fov, double camnear, bool planar);
+void wb_abstract_camera_new(WbDevice *d, unsigned int id, int w, int h,
+                            double fov, double camnear, bool planar);
 
 void wb_abstract_camera_write_request(WbDevice *d, WbRequest *r);
-bool wb_abstract_camera_handle_command(WbDevice *d, WbRequest *r, unsigned char command);
+bool wb_abstract_camera_handle_command(WbDevice *d, WbRequest *r,
+                                       unsigned char command);
 
 void abstract_camera_toggle_remote(WbDevice *d, WbRequest *r);
 
@@ -61,4 +63,4 @@ int wb_abstract_camera_get_width(const WbDevice *d);
 double wb_abstract_camera_get_fov(const WbDevice *d);
 double wb_abstract_camera_get_near(const WbDevice *d);
 
-#endif  // ABSTRACT_CAMERA_PRIVATE_H
+#endif // ABSTRACT_CAMERA_PRIVATE_H

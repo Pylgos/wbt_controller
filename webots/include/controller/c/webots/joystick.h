@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the computer joystick         */
+/* Description:  Webots C programming interface for the computer joystick */
 /**********************************************************************************/
 
 #ifndef WB_JOYSTICK_H

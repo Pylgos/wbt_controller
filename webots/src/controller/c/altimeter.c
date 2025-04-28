@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+#include "messages.h"
+#include "robot_private.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <webots/altimeter.h>
-#include "messages.h"
-#include "robot_private.h"
 
 // Static functions
 
@@ -45,12 +45,12 @@ static void altimeter_read_answer(WbDevice *d, WbRequest *r) {
   Altimeter *altimeter = d->pdata;
 
   switch (request_read_uchar(r)) {
-    case C_ALTIMETER_DATA:
-      altimeter->altitude = request_read_double(r);
-      break;
-    default:
-      ROBOT_ASSERT(0);  // should never be reached
-      break;
+  case C_ALTIMETER_DATA:
+    altimeter->altitude = request_read_double(r);
+    break;
+  default:
+    ROBOT_ASSERT(0); // should never be reached
+    break;
   }
 }
 
@@ -63,9 +63,7 @@ static void altimeter_write_request(WbDevice *d, WbRequest *r) {
   }
 }
 
-static void altimeter_cleanup(WbDevice *d) {
-  free(d->pdata);
-}
+static void altimeter_cleanup(WbDevice *d) { free(d->pdata); }
 
 static void altimeter_toggle_remote(WbDevice *d, WbRequest *r) {
   Altimeter *altimeter = d->pdata;
@@ -95,7 +93,8 @@ void wb_altimeter_init(WbDevice *d) {
 
 void wb_altimeter_enable(WbDeviceTag tag, int sampling_period) {
   if (sampling_period < 0) {
-    fprintf(stderr, "Error: %s() called with negative sampling period. \n", __FUNCTION__);
+    fprintf(stderr, "Error: %s() called with negative sampling period. \n",
+            __FUNCTION__);
     return;
   }
 
@@ -135,7 +134,10 @@ double wb_altimeter_get_value(WbDeviceTag tag) {
   const Altimeter *altimeter = altimeter_get_struct(tag);
   if (altimeter) {
     if (altimeter->sampling_period <= 0)
-      fprintf(stderr, "Error: %s() called for a disabled device! Please use: wb_altimeter_enable().\n", __FUNCTION__);
+      fprintf(stderr,
+              "Error: %s() called for a disabled device! Please use: "
+              "wb_altimeter_enable().\n",
+              __FUNCTION__);
     result = altimeter->altitude;
   } else
     fprintf(stderr, "Error: %s(): invalid device tag.\n", __FUNCTION__);

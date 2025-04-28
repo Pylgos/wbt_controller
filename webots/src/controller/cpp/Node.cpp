@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/supervisor.h>
 #include <webots/Node.hpp>
+#include <webots/supervisor.h>
 
 #include <iostream>
 #include <map>
@@ -45,17 +45,11 @@ void Node::cleanup() {
   nodeMap.clear();
 }
 
-Node::Node(WbNodeRef ref) {
-  nodeRef = ref;
-}
+Node::Node(WbNodeRef ref) { nodeRef = ref; }
 
-void Node::remove() {
-  wb_supervisor_node_remove(nodeRef);
-}
+void Node::remove() { wb_supervisor_node_remove(nodeRef); }
 
-int Node::getId() const {
-  return wb_supervisor_node_get_id(nodeRef);
-}
+int Node::getId() const { return wb_supervisor_node_get_id(nodeRef); }
 
 Node::Type Node::getType() const {
   return Type(wb_supervisor_node_get_type(nodeRef));
@@ -79,13 +73,12 @@ Node *Node::getParentNode() const {
 }
 
 Node *Node::getFromProtoDef(const std::string &name) const {
-  WbNodeRef internalNodeRef = wb_supervisor_node_get_from_proto_def(nodeRef, name.c_str());
+  WbNodeRef internalNodeRef =
+      wb_supervisor_node_get_from_proto_def(nodeRef, name.c_str());
   return findNode(internalNodeRef);
 }
 
-bool Node::isProto() const {
-  return wb_supervisor_node_is_proto(nodeRef);
-}
+bool Node::isProto() const { return wb_supervisor_node_is_proto(nodeRef); }
 
 Proto *Node::getProto() const {
   WbProtoRef protoRef = wb_supervisor_node_get_proto(nodeRef);
@@ -101,7 +94,8 @@ int Node::getNumberOfBaseNodeFields() const {
 }
 
 Field *Node::getField(const std::string &fieldName) const {
-  WbFieldRef fieldRef = wb_supervisor_node_get_field(nodeRef, fieldName.c_str());
+  WbFieldRef fieldRef =
+      wb_supervisor_node_get_field(nodeRef, fieldName.c_str());
   return Field::findField(fieldRef);
 }
 
@@ -111,12 +105,14 @@ Field *Node::getFieldByIndex(const int index) const {
 }
 
 Field *Node::getBaseNodeField(const std::string &fieldName) const {
-  WbFieldRef fieldRef = wb_supervisor_node_get_base_node_field(nodeRef, fieldName.c_str());
+  WbFieldRef fieldRef =
+      wb_supervisor_node_get_base_node_field(nodeRef, fieldName.c_str());
   return Field::findField(fieldRef);
 }
 
 Field *Node::getBaseNodeFieldByIndex(const int index) const {
-  WbFieldRef fieldRef = wb_supervisor_node_get_base_node_field_by_index(nodeRef, index);
+  WbFieldRef fieldRef =
+      wb_supervisor_node_get_base_node_field_by_index(nodeRef, index);
   return Field::findField(fieldRef);
 }
 
@@ -136,8 +132,10 @@ const double *Node::getPose(const Node *fromNode) const {
   return wb_supervisor_node_get_pose(nodeRef, fromNode->nodeRef);
 }
 
-void Node::enableContactPointsTracking(int samplingPeriod, bool includeDescendants) const {
-  wb_supervisor_node_enable_contact_points_tracking(nodeRef, samplingPeriod, includeDescendants);
+void Node::enableContactPointsTracking(int samplingPeriod,
+                                       bool includeDescendants) const {
+  wb_supervisor_node_enable_contact_points_tracking(nodeRef, samplingPeriod,
+                                                    includeDescendants);
 }
 
 void Node::disableContactPointsTracking(bool includeDescendants) const {
@@ -145,7 +143,8 @@ void Node::disableContactPointsTracking(bool includeDescendants) const {
 }
 
 ContactPoint *Node::getContactPoints(bool includeDescendants, int *size) const {
-  return wb_supervisor_node_get_contact_points(nodeRef, includeDescendants, size);
+  return wb_supervisor_node_get_contact_points(nodeRef, includeDescendants,
+                                               size);
 }
 
 void Node::enablePoseTracking(int samplingPeriod) const {
@@ -157,7 +156,8 @@ void Node::disablePoseTracking() const {
 }
 
 void Node::enablePoseTracking(int samplingPeriod, const Node *fromNode) const {
-  wb_supervisor_node_enable_pose_tracking(nodeRef, samplingPeriod, fromNode->nodeRef);
+  wb_supervisor_node_enable_pose_tracking(nodeRef, samplingPeriod,
+                                          fromNode->nodeRef);
 }
 
 void Node::disablePoseTracking(const Node *fromNode) const {
@@ -177,7 +177,8 @@ Node *Node::getContactPointNode(int index) const {
 }
 
 int Node::getNumberOfContactPoints(bool includeDescendants) const {
-  return wb_supervisor_node_get_number_of_contact_points(nodeRef, includeDescendants);
+  return wb_supervisor_node_get_number_of_contact_points(nodeRef,
+                                                         includeDescendants);
 }
 
 bool Node::getStaticBalance() const {
@@ -196,9 +197,7 @@ void Node::setVelocity(const double velocity[6]) {
   wb_supervisor_node_set_velocity(nodeRef, velocity);
 }
 
-void Node::resetPhysics() {
-  wb_supervisor_node_reset_physics(nodeRef);
-}
+void Node::resetPhysics() { wb_supervisor_node_reset_physics(nodeRef); }
 
 void Node::restartController() {
   wb_supervisor_node_restart_controller(nodeRef);
@@ -208,15 +207,14 @@ void Node::setVisibility(Node *from, bool visible) {
   wb_supervisor_node_set_visibility(nodeRef, from->nodeRef, visible);
 }
 
-void Node::moveViewpoint() const {
-  wb_supervisor_node_move_viewpoint(nodeRef);
-}
+void Node::moveViewpoint() const { wb_supervisor_node_move_viewpoint(nodeRef); }
 
 void Node::addForce(const double force[3], bool relative) {
   wb_supervisor_node_add_force(nodeRef, force, relative);
 }
 
-void Node::addForceWithOffset(const double force[3], const double offset[3], bool relative) {
+void Node::addForceWithOffset(const double force[3], const double offset[3],
+                              bool relative) {
   wb_supervisor_node_add_force_with_offset(nodeRef, force, offset, relative);
 }
 

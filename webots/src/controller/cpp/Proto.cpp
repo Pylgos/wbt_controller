@@ -13,11 +13,11 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/supervisor.h>
 #include <webots/Proto.hpp>
+#include <webots/supervisor.h>
 
-#include <stdio.h>
 #include <map>
+#include <stdio.h>
 
 using namespace std;
 using namespace webots;
@@ -45,8 +45,7 @@ void Proto::cleanup() {
   protoMap.clear();
 }
 
-Proto::Proto(WbProtoRef ref) : protoRef(ref) {
-}
+Proto::Proto(WbProtoRef ref) : protoRef(ref) {}
 
 string Proto::getTypeName() const {
   return wb_supervisor_proto_get_type_name(protoRef);
@@ -61,11 +60,13 @@ Proto *Proto::getParent() const {
 }
 
 Field *Proto::getField(const string &fieldName) const {
-  return Field::findField(wb_supervisor_proto_get_field(protoRef, fieldName.c_str()));
+  return Field::findField(
+      wb_supervisor_proto_get_field(protoRef, fieldName.c_str()));
 }
 
 Field *Proto::getFieldByIndex(const int index) const {
-  return Field::findField(wb_supervisor_proto_get_field_by_index(protoRef, index));
+  return Field::findField(
+      wb_supervisor_proto_get_field_by_index(protoRef, index));
 }
 
 int Proto::getNumberOfFields() const {

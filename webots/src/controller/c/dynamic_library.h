@@ -24,7 +24,7 @@
 struct HINSTANCE__;
 typedef struct HINSTANCE__ *dlInstance;
 #define DYNAMIC_LIBRARY_HANDLE dlInstance
-#else  // __linux__ || __APPLE__
+#else // __linux__ || __APPLE__
 #define DYNAMIC_LIBRARY_HANDLE void *
 #endif
 
@@ -34,4 +34,4 @@ void dynamic_library_cleanup(DYNAMIC_LIBRARY_HANDLE);
 void *dynamic_library_get_symbol(DYNAMIC_LIBRARY_HANDLE, const char *symbol);
 const char *dynamic_library_get_last_error();
 
-#endif  // DYNAMIC_LIBRARY_H
+#endif // DYNAMIC_LIBRARY_H

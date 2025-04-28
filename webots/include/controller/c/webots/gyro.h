@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the Gyro node                 */
+/* Description:  Webots C programming interface for the Gyro node */
 /**********************************************************************************/
 
 #ifndef WB_GYRO_H

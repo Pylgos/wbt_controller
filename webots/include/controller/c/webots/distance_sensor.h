@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the DistanceSensor node       */
+/* Description:  Webots C programming interface for the DistanceSensor node */
 /**********************************************************************************/
 
 #ifndef WB_DISTANCE_SENSOR_H

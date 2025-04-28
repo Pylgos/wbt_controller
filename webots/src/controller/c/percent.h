@@ -17,6 +17,6 @@
 #ifndef PERCENT_H
 #define PERCENT_H
 
-char *percent_encode(const char *source);  // the resulting string should be free
+char *percent_encode(const char *source); // the resulting string should be free
 
-#endif  // PERCENT_H
+#endif // PERCENT_H

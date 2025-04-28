@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the computer keyboard         */
+/* Description:  Webots C programming interface for the computer keyboard */
 /**********************************************************************************/
 
 #ifndef WB_KEYBOARD_H

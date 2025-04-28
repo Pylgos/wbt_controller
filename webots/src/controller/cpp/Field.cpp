@@ -13,11 +13,11 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/supervisor.h>
 #include <webots/Field.hpp>
+#include <webots/supervisor.h>
 
-#include <stdio.h>
 #include <map>
+#include <stdio.h>
 
 using namespace std;
 using namespace webots;
@@ -45,9 +45,7 @@ void Field::cleanup() {
   fieldMap.clear();
 }
 
-Field::Field(WbFieldRef ref) {
-  fieldRef = ref;
-}
+Field::Field(WbFieldRef ref) { fieldRef = ref; }
 
 Field::Type Field::getType() const {
   return Type(wb_supervisor_field_get_type(fieldRef));
@@ -74,9 +72,7 @@ Field *Field::getActualField() const {
   return Field::findField(actualFieldRef);
 }
 
-int Field::getCount() const {
-  return wb_supervisor_field_get_count(fieldRef);
-}
+int Field::getCount() const { return wb_supervisor_field_get_count(fieldRef); }
 
 bool Field::getSFBool() const {
   return wb_supervisor_field_get_sf_bool(fieldRef);
@@ -251,12 +247,12 @@ void Field::removeMF(int index) {
   wb_supervisor_field_remove_mf(fieldRef, index);
 }
 
-void Field::removeSF() {
-  wb_supervisor_field_remove_sf(fieldRef);
-}
+void Field::removeSF() { wb_supervisor_field_remove_sf(fieldRef); }
 
-void Field::importMFNodeFromString(int position, const std::string &nodeString) {
-  wb_supervisor_field_import_mf_node_from_string(fieldRef, position, nodeString.c_str());
+void Field::importMFNodeFromString(int position,
+                                   const std::string &nodeString) {
+  wb_supervisor_field_import_mf_node_from_string(fieldRef, position,
+                                                 nodeString.c_str());
 }
 
 void Field::importSFNodeFromString(const std::string &nodeString) {

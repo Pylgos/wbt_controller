@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+#include "device_private.h"
+#include "messages.h"
+#include "robot_private.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <webots/compass.h>
 #include <webots/nodes.h>
-#include "device_private.h"
-#include "messages.h"
-#include "robot_private.h"
 
 typedef struct {
-  bool enable;          // need to enable device ?
-  int sampling_period;  // milliseconds
-  double north[3];      // north
+  bool enable;         // need to enable device ?
+  int sampling_period; // milliseconds
+  double north[3];     // north
   int lookup_table_size;
   double *lookup_table;
 } Compass;
@@ -53,24 +53,25 @@ static void compass_read_answer(WbDevice *d, WbRequest *r) {
   Compass *compass = d->pdata;
 
   switch (request_read_uchar(r)) {
-    case C_COMPASS_DATA:
-      compass->north[0] = request_read_double(r);
-      compass->north[1] = request_read_double(r);
-      compass->north[2] = request_read_double(r);
-      break;
-    case C_CONFIGURE:
-      compass->lookup_table_size = request_read_int32(r);
-      free(compass->lookup_table);
-      compass->lookup_table = NULL;
-      if (compass->lookup_table_size > 0) {
-        compass->lookup_table = (double *)malloc(sizeof(double) * compass->lookup_table_size * 3);
-        for (int i = 0; i < compass->lookup_table_size * 3; i++)
-          compass->lookup_table[i] = request_read_double(r);
-      }
-      break;
-    default:
-      ROBOT_ASSERT(0);  // should never be reached
-      break;
+  case C_COMPASS_DATA:
+    compass->north[0] = request_read_double(r);
+    compass->north[1] = request_read_double(r);
+    compass->north[2] = request_read_double(r);
+    break;
+  case C_CONFIGURE:
+    compass->lookup_table_size = request_read_int32(r);
+    free(compass->lookup_table);
+    compass->lookup_table = NULL;
+    if (compass->lookup_table_size > 0) {
+      compass->lookup_table =
+          (double *)malloc(sizeof(double) * compass->lookup_table_size * 3);
+      for (int i = 0; i < compass->lookup_table_size * 3; i++)
+        compass->lookup_table[i] = request_read_double(r);
+    }
+    break;
+  default:
+    ROBOT_ASSERT(0); // should never be reached
+    break;
   }
 }
 
@@ -103,13 +104,11 @@ static void compass_write_request(WbDevice *d, WbRequest *r) {
   if (compass->enable) {
     request_write_uchar(r, C_SET_SAMPLING_PERIOD);
     request_write_uint16(r, compass->sampling_period);
-    compass->enable = false;  // done
+    compass->enable = false; // done
   }
 }
 
-static void compass_cleanup(WbDevice *d) {
-  free(d->pdata);
-}
+static void compass_cleanup(WbDevice *d) { free(d->pdata); }
 
 static void compass_toggle_remote(WbDevice *d, WbRequest *r) {
   Compass *compass = d->pdata;
@@ -141,7 +140,8 @@ void wb_compass_init(WbDevice *d) {
 
 void wb_compass_enable(WbDeviceTag tag, int sampling_period) {
   if (sampling_period < 0) {
-    fprintf(stderr, "Error: %s() called with negative sampling period.\n", __FUNCTION__);
+    fprintf(stderr, "Error: %s() called with negative sampling period.\n",
+            __FUNCTION__);
     return;
   }
 
@@ -181,7 +181,10 @@ const double *wb_compass_get_values(WbDeviceTag tag) {
   const Compass *compass = compass_get_struct(tag);
   if (compass) {
     if (compass->sampling_period <= 0)
-      fprintf(stderr, "Error: %s() called for a disabled device! Please use: wb_compass_enable().\n", __FUNCTION__);
+      fprintf(stderr,
+              "Error: %s() called for a disabled device! Please use: "
+              "wb_compass_enable().\n",
+              __FUNCTION__);
     result = compass->north;
   } else
     fprintf(stderr, "Error: %s(): invalid device tag.\n", __FUNCTION__);

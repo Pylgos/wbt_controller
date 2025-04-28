@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the RangeFinder node          */
+/* Description:  Webots C programming interface for the RangeFinder node */
 /**********************************************************************************/
 
 #ifndef WB_RANGE_FINDER_H
@@ -38,10 +38,12 @@ int wb_range_finder_get_height(WbDeviceTag tag);
 double wb_range_finder_get_fov(WbDeviceTag tag);
 double wb_range_finder_get_min_range(WbDeviceTag tag);
 double wb_range_finder_get_max_range(WbDeviceTag tag);
-int wb_range_finder_save_image(WbDeviceTag tag, const char *filename, int quality);
+int wb_range_finder_save_image(WbDeviceTag tag, const char *filename,
+                               int quality);
 
 // range finder functions
-#define wb_range_finder_image_get_depth(image, width, x, y) (image[(y) * (width) + (x)])
+#define wb_range_finder_image_get_depth(image, width, x, y)                    \
+  (image[(y) * (width) + (x)])
 
 #ifdef __cplusplus
 }

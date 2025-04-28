@@ -19,4 +19,4 @@
 
 int display_get_channel_number(int pixel_format);
 
-#endif  // DISPLAY_PRIVATE_H
+#endif // DISPLAY_PRIVATE_H

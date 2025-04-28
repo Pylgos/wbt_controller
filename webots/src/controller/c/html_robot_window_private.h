@@ -22,4 +22,4 @@ void html_robot_window_init();
 void html_robot_window_step(int step);
 void html_robot_window_cleanup();
 
-#endif  // HTML_ROBOT_WINDOW__PRIVATE_H
+#endif // HTML_ROBOT_WINDOW__PRIVATE_H

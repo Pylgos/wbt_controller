@@ -21,4 +21,4 @@
 
 void wb_supervisor_init(WbDevice *d);
 
-#endif  // SUPERVISOR_PRIVATE_H
+#endif // SUPERVISOR_PRIVATE_H

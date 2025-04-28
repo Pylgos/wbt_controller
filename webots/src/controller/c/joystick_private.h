@@ -25,4 +25,4 @@ bool joystick_read_answer(int message, WbRequest *r);
 void joystick_step_end();
 void wb_joystick_init();
 
-#endif  // JOYSTICK_PRIVATE_H
+#endif // JOYSTICK_PRIVATE_H

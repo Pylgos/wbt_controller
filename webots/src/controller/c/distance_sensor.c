@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
+#include "device_private.h"
+#include "messages.h"
+#include "robot_private.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <webots/distance_sensor.h>
 #include <webots/nodes.h>
 #include <webots/robot.h>
 #include <webots/types.h>
-#include "device_private.h"
-#include "messages.h"
-#include "robot_private.h"
 
 // Static functions
 
 typedef struct {
-  bool enable;          // need to enable device ?
-  int sampling_period;  // milliseconds
+  bool enable;         // need to enable device ?
+  int sampling_period; // milliseconds
   double value;
   WbDistanceSensorType type;
   double max_value;
@@ -60,26 +60,27 @@ static DistanceSensor *distance_sensor_get_struct(WbDeviceTag t) {
 static void distance_sensor_read_answer(WbDevice *d, WbRequest *r) {
   DistanceSensor *ds = (DistanceSensor *)d->pdata;
   switch (request_read_uchar(r)) {
-    case C_DISTANCE_SENSOR_DATA:
-      ds->value = request_read_double(r);
-      break;
-    case C_CONFIGURE:
-      ds->type = request_read_int32(r);
-      ds->min_value = request_read_double(r);
-      ds->max_value = request_read_double(r);
-      ds->aperture = request_read_double(r);
-      ds->lookup_table_size = request_read_int32(r);
-      free(ds->lookup_table);
-      ds->lookup_table = NULL;
-      if (ds->lookup_table_size > 0) {
-        ds->lookup_table = (double *)malloc(sizeof(double) * ds->lookup_table_size * 3);
-        for (int i = 0; i < ds->lookup_table_size * 3; i++)
-          ds->lookup_table[i] = request_read_double(r);
-      }
-      break;
-    default:
-      ROBOT_ASSERT(0);  // should never be reached
-      break;
+  case C_DISTANCE_SENSOR_DATA:
+    ds->value = request_read_double(r);
+    break;
+  case C_CONFIGURE:
+    ds->type = request_read_int32(r);
+    ds->min_value = request_read_double(r);
+    ds->max_value = request_read_double(r);
+    ds->aperture = request_read_double(r);
+    ds->lookup_table_size = request_read_int32(r);
+    free(ds->lookup_table);
+    ds->lookup_table = NULL;
+    if (ds->lookup_table_size > 0) {
+      ds->lookup_table =
+          (double *)malloc(sizeof(double) * ds->lookup_table_size * 3);
+      for (int i = 0; i < ds->lookup_table_size * 3; i++)
+        ds->lookup_table[i] = request_read_double(r);
+    }
+    break;
+  default:
+    ROBOT_ASSERT(0); // should never be reached
+    break;
   }
 }
 
@@ -112,7 +113,7 @@ static void distance_sensor_write_request(WbDevice *d, WbRequest *r) {
   if (ds->enable) {
     request_write_uchar(r, C_SET_SAMPLING_PERIOD);
     request_write_uint16(r, ds->sampling_period);
-    ds->enable = false;  // done
+    ds->enable = false; // done
   }
 }
 
@@ -150,7 +151,8 @@ void wb_distance_sensor_init(WbDevice *d) {
 
 void wb_distance_sensor_enable(WbDeviceTag tag, int sampling_period) {
   if (sampling_period < 0) {
-    fprintf(stderr, "Error: %s() called with negative sampling period.\n", __FUNCTION__);
+    fprintf(stderr, "Error: %s() called with negative sampling period.\n",
+            __FUNCTION__);
     return;
   }
 
@@ -190,7 +192,10 @@ double wb_distance_sensor_get_value(WbDeviceTag tag) {
   const DistanceSensor *ds = distance_sensor_get_struct(tag);
   if (ds) {
     if (ds->sampling_period <= 0)
-      fprintf(stderr, "Error: %s() called for a disabled device! Please use: wb_distance_sensor_enable().\n", __FUNCTION__);
+      fprintf(stderr,
+              "Error: %s() called for a disabled device! Please use: "
+              "wb_distance_sensor_enable().\n",
+              __FUNCTION__);
     value = ds->value;
   } else
     fprintf(stderr, "Error: %s(): invalid device tag.\n", __FUNCTION__);

@@ -18,24 +18,24 @@
 // this file implements a communication channel mechanism between controllers
 // ***************************************************************************
 
+#include "device_private.h"
+#include "messages.h"
+#include "robot_private.h"
+#include "scheduler.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <webots/nodes.h>
 #include <webots/receiver.h>
-#include "device_private.h"
-#include "messages.h"
-#include "robot_private.h"
-#include "scheduler.h"
 
 typedef struct _PacketStruct PacketStruct;
 
 struct _PacketStruct {
-  double dir[3];  // direction of emitter in receiver's coordinate system
-  char *data;     // user data (packet body)
-  int size;       // data size (not including header)
-  double signal;  // signal strength
+  double dir[3]; // direction of emitter in receiver's coordinate system
+  char *data;    // user data (packet body)
+  int size;      // data size (not including header)
+  double signal; // signal strength
   PacketStruct *next;
 };
 
@@ -57,16 +57,16 @@ static void packet_destroy(PacketStruct *ps) {
 }
 
 typedef struct {
-  int enable : 1;             // need to enable device ?
-  int set_channel : 1;        // need to change receiver's channel ?
-  int sampling_period;        // milliseconds
-  int channel;                // receiver's channel
-  int *allowed_channels;      // allowed channels receiver is allowed to listen to
-  PacketStruct *queue;        // reception queue
-  int queue_length;           // number of packets in the reception queue
-  int buffer_size;            // reception buffer size (as in Receiver.bufferSize)
-  int buffer_used;            // sum of all packet data size
-  int allowed_channels_size;  // size of allowed_channels array
+  int enable : 1;        // need to enable device ?
+  int set_channel : 1;   // need to change receiver's channel ?
+  int sampling_period;   // milliseconds
+  int channel;           // receiver's channel
+  int *allowed_channels; // allowed channels receiver is allowed to listen to
+  PacketStruct *queue;   // reception queue
+  int queue_length;      // number of packets in the reception queue
+  int buffer_size;       // reception buffer size (as in Receiver.bufferSize)
+  int buffer_used;       // sum of all packet data size
+  int allowed_channels_size; // size of allowed_channels array
 } Receiver;
 
 static Receiver *receiver_create() {
@@ -130,41 +130,42 @@ static Receiver *receiver_get_struct(WbDeviceTag t) {
 static void receiver_read_answer(WbDevice *d, WbRequest *r) {
   Receiver *rs = d->pdata;
   switch (request_read_uchar(r)) {
-    case C_CONFIGURE:
-      rs->buffer_size = request_read_int32(r);
-      rs->channel = request_read_int32(r);
-      rs->allowed_channels_size = request_read_int32(r);
-      rs->allowed_channels = (int *)realloc(rs->allowed_channels, rs->allowed_channels_size * sizeof(int));
-      for (int i = 0; i < rs->allowed_channels_size; i++)
-        rs->allowed_channels[i] = request_read_int32(r);
-      break;
+  case C_CONFIGURE:
+    rs->buffer_size = request_read_int32(r);
+    rs->channel = request_read_int32(r);
+    rs->allowed_channels_size = request_read_int32(r);
+    rs->allowed_channels = (int *)realloc(
+        rs->allowed_channels, rs->allowed_channels_size * sizeof(int));
+    for (int i = 0; i < rs->allowed_channels_size; i++)
+      rs->allowed_channels[i] = request_read_int32(r);
+    break;
 
-    case C_RECEIVER_RECEIVE: {
-      // copy receiver channel number from incoming message
-      rs->channel = request_read_int32(r);
+  case C_RECEIVER_RECEIVE: {
+    // copy receiver channel number from incoming message
+    rs->channel = request_read_int32(r);
 
-      // read packet header
-      PacketStruct *ps = packet_create();
-      ps->dir[0] = request_read_double(r);
-      ps->dir[1] = request_read_double(r);
-      ps->dir[2] = request_read_double(r);
-      ps->signal = request_read_double(r);
+    // read packet header
+    PacketStruct *ps = packet_create();
+    ps->dir[0] = request_read_double(r);
+    ps->dir[1] = request_read_double(r);
+    ps->dir[2] = request_read_double(r);
+    ps->signal = request_read_double(r);
 
-      // read packet body
-      ps->size = request_read_int32(r);
-      ps->data = malloc(ps->size);
-      memcpy(ps->data, request_read_data(r, ps->size), ps->size);
+    // read packet body
+    ps->size = request_read_int32(r);
+    ps->data = malloc(ps->size);
+    memcpy(ps->data, request_read_data(r, ps->size), ps->size);
 
-      // enqueue packet if there's enough buffer space
-      if (rs->buffer_size == -1 || ps->size <= rs->buffer_size - rs->buffer_used)
-        receiver_enqueue(rs, ps);
-      else
-        packet_destroy(ps);
+    // enqueue packet if there's enough buffer space
+    if (rs->buffer_size == -1 || ps->size <= rs->buffer_size - rs->buffer_used)
+      receiver_enqueue(rs, ps);
+    else
+      packet_destroy(ps);
 
-      break;
-    }
-    default:
-      ROBOT_ASSERT(0);
+    break;
+  }
+  default:
+    ROBOT_ASSERT(0);
   }
 }
 
@@ -173,12 +174,12 @@ static void receiver_write_request(WbDevice *d, WbRequest *r) {
   if (rs->enable) {
     request_write_uchar(r, C_SET_SAMPLING_PERIOD);
     request_write_uint16(r, rs->sampling_period);
-    rs->enable = false;  // done
+    rs->enable = false; // done
   }
   if (rs->set_channel) {
     request_write_uchar(r, C_RECEIVER_SET_CHANNEL);
     request_write_uint32(r, rs->channel);
-    rs->set_channel = false;  // done
+    rs->set_channel = false; // done
   }
 }
 
@@ -202,7 +203,8 @@ void wb_receiver_init(WbDevice *d) {
 
 void wb_receiver_enable(WbDeviceTag tag, int sampling_period) {
   if (sampling_period < 0) {
-    fprintf(stderr, "Error: %s() called with negative sampling period.\n", __FUNCTION__);
+    fprintf(stderr, "Error: %s() called with negative sampling period.\n",
+            __FUNCTION__);
     return;
   }
   robot_mutex_lock();
@@ -239,7 +241,9 @@ int wb_receiver_get_sampling_period(WbDeviceTag tag) {
 
 void wb_receiver_set_channel(WbDeviceTag tag, int channel) {
   if (channel < -1) {
-    fprintf(stderr, "Error: %s() called with an invalid channel=%d. Please use a channel inside the range [-1,inf).\n",
+    fprintf(stderr,
+            "Error: %s() called with an invalid channel=%d. Please use a "
+            "channel inside the range [-1,inf).\n",
             __FUNCTION__, channel);
     return;
   }
@@ -263,7 +267,8 @@ void wb_receiver_set_channel(WbDeviceTag tag, int channel) {
 
     if (!is_allowed)
       fprintf(stderr,
-              "Error: %s() called with channel=%d, which is not between allowed channels. Please use an allowed channel.\n",
+              "Error: %s() called with channel=%d, which is not between "
+              "allowed channels. Please use an allowed channel.\n",
               __FUNCTION__, channel);
     else {
       rs->set_channel = true;
@@ -305,7 +310,10 @@ int wb_receiver_get_queue_length(WbDeviceTag tag) {
     result = -1;
   } else {
     if (rs->sampling_period <= 0)
-      fprintf(stderr, "Error: %s() called for a disabled device! Please use: wb_receiver_enable().\n", __FUNCTION__);
+      fprintf(stderr,
+              "Error: %s() called for a disabled device! Please use: "
+              "wb_receiver_enable().\n",
+              __FUNCTION__);
     result = rs->queue_length;
   }
   robot_mutex_unlock();
@@ -322,7 +330,8 @@ int wb_receiver_get_data_size(WbDeviceTag tag) {
   } else if (rs->queue)
     result = rs->queue->size;
   else {
-    fprintf(stderr, "Error: %s(): the receiver queue is empty.\n", __FUNCTION__);
+    fprintf(stderr, "Error: %s(): the receiver queue is empty.\n",
+            __FUNCTION__);
     result = -1;
   }
   robot_mutex_unlock();
@@ -339,7 +348,8 @@ const void *wb_receiver_get_data(WbDeviceTag tag) {
   } else if (rs->queue)
     result = rs->queue->data;
   else {
-    fprintf(stderr, "Error: %s(): the receiver queue is empty.\n", __FUNCTION__);
+    fprintf(stderr, "Error: %s(): the receiver queue is empty.\n",
+            __FUNCTION__);
     result = NULL;
   }
   robot_mutex_unlock();
@@ -356,7 +366,8 @@ const double *wb_receiver_get_emitter_direction(WbDeviceTag tag) {
   } else if (rs->queue)
     result = rs->queue->dir;
   else {
-    fprintf(stderr, "Error: %s(): the receiver queue is empty.\n", __FUNCTION__);
+    fprintf(stderr, "Error: %s(): the receiver queue is empty.\n",
+            __FUNCTION__);
     result = NULL;
   }
   robot_mutex_unlock();
@@ -373,7 +384,8 @@ double wb_receiver_get_signal_strength(WbDeviceTag tag) {
   } else if (rs->queue)
     result = rs->queue->signal;
   else {
-    fprintf(stderr, "Error: %s(): the receiver queue is empty.\n", __FUNCTION__);
+    fprintf(stderr, "Error: %s(): the receiver queue is empty.\n",
+            __FUNCTION__);
     result = NAN;
   }
   robot_mutex_unlock();

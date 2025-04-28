@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/lidar.h>
 #include <webots/Lidar.hpp>
+#include <webots/lidar.h>
 
 using namespace std;
 using namespace webots;
@@ -23,17 +23,11 @@ void Lidar::enable(int sampling_period) {
   wb_lidar_enable(getTag(), sampling_period);
 }
 
-void Lidar::enablePointCloud() {
-  wb_lidar_enable_point_cloud(getTag());
-}
+void Lidar::enablePointCloud() { wb_lidar_enable_point_cloud(getTag()); }
 
-void Lidar::disable() {
-  wb_lidar_disable(getTag());
-}
+void Lidar::disable() { wb_lidar_disable(getTag()); }
 
-void Lidar::disablePointCloud() {
-  wb_lidar_disable_point_cloud(getTag());
-}
+void Lidar::disablePointCloud() { wb_lidar_disable_point_cloud(getTag()); }
 
 int Lidar::getSamplingPeriod() const {
   return wb_lidar_get_sampling_period(getTag());
@@ -79,26 +73,18 @@ double Lidar::getMaxFrequency() const {
   return wb_lidar_get_max_frequency(getTag());
 }
 
-double Lidar::getFrequency() const {
-  return wb_lidar_get_frequency(getTag());
-}
+double Lidar::getFrequency() const { return wb_lidar_get_frequency(getTag()); }
 
 void Lidar::setFrequency(double frequency) {
   wb_lidar_set_frequency(getTag(), frequency);
 }
 
-double Lidar::getFov() const {
-  return wb_lidar_get_fov(getTag());
-}
+double Lidar::getFov() const { return wb_lidar_get_fov(getTag()); }
 
 double Lidar::getVerticalFov() const {
   return wb_lidar_get_vertical_fov(getTag());
 }
 
-double Lidar::getMinRange() const {
-  return wb_lidar_get_min_range(getTag());
-}
+double Lidar::getMinRange() const { return wb_lidar_get_min_range(getTag()); }
 
-double Lidar::getMaxRange() const {
-  return wb_lidar_get_max_range(getTag());
-}
+double Lidar::getMaxRange() const { return wb_lidar_get_max_range(getTag()); }

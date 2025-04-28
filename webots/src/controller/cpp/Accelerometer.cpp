@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/accelerometer.h>
 #include <webots/Accelerometer.hpp>
+#include <webots/accelerometer.h>
 
 using namespace webots;
 
@@ -22,9 +22,7 @@ void Accelerometer::enable(int sampling_period) {
   wb_accelerometer_enable(getTag(), sampling_period);
 }
 
-void Accelerometer::disable() {
-  wb_accelerometer_disable(getTag());
-}
+void Accelerometer::disable() { wb_accelerometer_disable(getTag()); }
 
 int Accelerometer::getSamplingPeriod() const {
   return wb_accelerometer_get_sampling_period(getTag());

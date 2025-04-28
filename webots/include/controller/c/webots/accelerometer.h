@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the Accelerometer node        */
+/* Description:  Webots C programming interface for the Accelerometer node */
 /**********************************************************************************/
 
 #ifndef WB_ACCELEROMETER_H

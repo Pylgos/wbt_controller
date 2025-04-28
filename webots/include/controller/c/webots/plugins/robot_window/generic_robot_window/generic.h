@@ -15,8 +15,8 @@
  */
 
 /*************************************************************************************/
-/* Description:  Webots C utility to enable/disable devices and retrieve the         */
-/*               measurements from a robot window                                    */
+/* Description:  Webots C utility to enable/disable devices and retrieve the */
+/*               measurements from a robot window */
 /*************************************************************************************/
 
 #ifndef WBU_GENERIC_ROBOT_WINDOW_H
@@ -29,7 +29,8 @@ extern "C" {
 #endif
 
 void wbu_generic_robot_window_parse_device_command(char *token, char *tokens);
-bool wbu_generic_robot_window_parse_device_control_command(const char *first_token, char *tokens);
+bool wbu_generic_robot_window_parse_device_control_command(
+    const char *first_token, char *tokens);
 bool wbu_generic_robot_window_handle_messages(const char *message);
 void wbu_generic_robot_window_init();
 void wbu_generic_robot_window_update();
@@ -41,4 +42,4 @@ bool wbu_generic_robot_window_needs_update();
 }
 #endif
 
-#endif  // WBU_GENERIC_ROBOT_WINDOW_H
+#endif // WBU_GENERIC_ROBOT_WINDOW_H

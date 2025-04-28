@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the brake node                */
+/* Description:  Webots C programming interface for the brake node */
 /**********************************************************************************/
 
 #ifndef WB_BRAKE_H

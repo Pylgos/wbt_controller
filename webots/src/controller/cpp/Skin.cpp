@@ -13,13 +13,14 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/skin.h>
 #include <webots/Skin.hpp>
+#include <webots/skin.h>
 
 using namespace std;
 using namespace webots;
 
-void Skin::setBoneOrientation(int index, const double *orientation, bool absolute) {
+void Skin::setBoneOrientation(int index, const double *orientation,
+                              bool absolute) {
   wb_skin_set_bone_orientation(getTag(), index, orientation, absolute);
 }
 
@@ -27,9 +28,7 @@ void Skin::setBonePosition(int index, const double *position, bool absolute) {
   wb_skin_set_bone_position(getTag(), index, position, absolute);
 }
 
-int Skin::getBoneCount() const {
-  return wb_skin_get_bone_count(getTag());
-}
+int Skin::getBoneCount() const { return wb_skin_get_bone_count(getTag()); }
 
 const string Skin::getBoneName(int index) const {
   const char *name_str = wb_skin_get_bone_name(getTag(), index);

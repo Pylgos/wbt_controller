@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+#include "device_private.h"
+#include "messages.h"
+#include "robot_private.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <webots/inertial_unit.h>
 #include <webots/nodes.h>
-#include "device_private.h"
-#include "messages.h"
-#include "robot_private.h"
 
 typedef struct {
-  int enable;           // need to enable device ?
-  int sampling_period;  // milliseconds
+  int enable;          // need to enable device ?
+  int sampling_period; // milliseconds
   double quaternion[4];
   double noise;
   char *coordinate_system;
@@ -50,17 +50,17 @@ static void inertial_unit_read_answer(WbDevice *d, WbRequest *r) {
   InertialUnit *s = d->pdata;
 
   switch (request_read_uchar(r)) {
-    case C_INERTIAL_UNIT_DATA:
-      for (int i = 0; i < 4; i++)
-        s->quaternion[i] = request_read_double(r);
-      break;
-    case C_CONFIGURE:
-      s->noise = request_read_double(r);
-      s->coordinate_system = request_read_string(r);
-      break;
-    default:
-      ROBOT_ASSERT(0);  // should never be reached
-      break;
+  case C_INERTIAL_UNIT_DATA:
+    for (int i = 0; i < 4; i++)
+      s->quaternion[i] = request_read_double(r);
+    break;
+  case C_CONFIGURE:
+    s->noise = request_read_double(r);
+    s->coordinate_system = request_read_string(r);
+    break;
+  default:
+    ROBOT_ASSERT(0); // should never be reached
+    break;
   }
 }
 
@@ -81,13 +81,11 @@ static void inertial_unit_write_request(WbDevice *d, WbRequest *r) {
   if (inertial_unit->enable) {
     request_write_uchar(r, C_SET_SAMPLING_PERIOD);
     request_write_uint16(r, inertial_unit->sampling_period);
-    inertial_unit->enable = false;  // done
+    inertial_unit->enable = false; // done
   }
 }
 
-static void inertial_unit_cleanup(WbDevice *d) {
-  free(d->pdata);
-}
+static void inertial_unit_cleanup(WbDevice *d) { free(d->pdata); }
 
 static void inertial_unit_toggle_remote(WbDevice *d, WbRequest *r) {
   InertialUnit *inertial_unit = d->pdata;
@@ -109,7 +107,8 @@ void wb_inertial_unit_init(WbDevice *d) {
 
 void wb_inertial_unit_enable(WbDeviceTag tag, int sampling_period) {
   if (sampling_period < 0) {
-    fprintf(stderr, "Error: %s() called with negative sampling period.\n", __FUNCTION__);
+    fprintf(stderr, "Error: %s() called with negative sampling period.\n",
+            __FUNCTION__);
     return;
   }
 
@@ -149,14 +148,19 @@ const double *wb_inertial_unit_get_roll_pitch_yaw(WbDeviceTag tag) {
   const InertialUnit *inertial_unit = inertial_unit_get_struct(tag);
   if (inertial_unit) {
     if (inertial_unit->sampling_period <= 0)
-      fprintf(stderr, "Error: %s() called for a disabled device! Please use: wb_inertial_unit_enable().\n", __FUNCTION__);
+      fprintf(stderr,
+              "Error: %s() called for a disabled device! Please use: "
+              "wb_inertial_unit_enable().\n",
+              __FUNCTION__);
 
     const double *q = inertial_unit->quaternion;
 
     if (strcmp(inertial_unit->coordinate_system, "NUE") == 0) {
       // NUE: extrensic rotation matrix e = Y(yaw) Z(pitch) X(roll)
-      result[2] = atan2(2 * q[1] * q[3] - 2 * q[0] * q[2], 1 - 2 * q[1] * q[1] - 2 * q[2] * q[2]);
-      result[0] = atan2(2 * q[0] * q[3] - 2 * q[1] * q[2], 1 - 2 * q[0] * q[0] - 2 * q[2] * q[2]);
+      result[2] = atan2(2 * q[1] * q[3] - 2 * q[0] * q[2],
+                        1 - 2 * q[1] * q[1] - 2 * q[2] * q[2]);
+      result[0] = atan2(2 * q[0] * q[3] - 2 * q[1] * q[2],
+                        1 - 2 * q[0] * q[0] - 2 * q[2] * q[2]);
       result[1] = asin(2 * q[0] * q[1] + 2 * q[2] * q[3]);
     } else {
       // ENU: extrensic rotation matrix e = Z(yaw) Y(pitch) X(roll)
@@ -186,7 +190,10 @@ const double *wb_inertial_unit_get_quaternion(WbDeviceTag tag) {
   const InertialUnit *inertial_unit = inertial_unit_get_struct(tag);
   if (inertial_unit) {
     if (inertial_unit->sampling_period <= 0)
-      fprintf(stderr, "Error: %s() called for a disabled device! Please use: wb_inertial_unit_enable().\n", __FUNCTION__);
+      fprintf(stderr,
+              "Error: %s() called for a disabled device! Please use: "
+              "wb_inertial_unit_enable().\n",
+              __FUNCTION__);
     result = inertial_unit->quaternion;
   } else
     fprintf(stderr, "Error: %s(): invalid device tag.\n", __FUNCTION__);

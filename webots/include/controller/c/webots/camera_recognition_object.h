@@ -15,7 +15,8 @@
  */
 
 /***************************************************************************************************/
-/* Description:  Common definition of the 'WbCameraRecognitionObject' for both the C and C++ APIs */
+/* Description:  Common definition of the 'WbCameraRecognitionObject' for both
+ * the C and C++ APIs */
 /**************************************************************************************************/
 
 #ifndef WB_CAMERA_RECOGNITION_OBJECT_H

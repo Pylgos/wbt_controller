@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the Motor node                */
+/* Description:  Webots C programming interface for the Motor node */
 /**********************************************************************************/
 
 #ifndef WB_POSITION_SENSOR_H
@@ -32,10 +32,11 @@
 extern "C" {
 #endif
 
-void wb_position_sensor_enable(WbDeviceTag tag, int sampling_period);  // milliseconds
+void wb_position_sensor_enable(WbDeviceTag tag,
+                               int sampling_period); // milliseconds
 void wb_position_sensor_disable(WbDeviceTag tag);
 int wb_position_sensor_get_sampling_period(WbDeviceTag tag);
-double wb_position_sensor_get_value(WbDeviceTag tag);  // rad or meters
+double wb_position_sensor_get_value(WbDeviceTag tag); // rad or meters
 WbJointType wb_position_sensor_get_type(WbDeviceTag tag);
 WbDeviceTag wb_position_sensor_get_motor(WbDeviceTag tag);
 WbDeviceTag wb_position_sensor_get_brake(WbDeviceTag tag);

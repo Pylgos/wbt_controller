@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the Motor node                */
+/* Description:  Webots C programming interface for the Motor node */
 /**********************************************************************************/
 
 #ifndef WB_MOTOR_H
@@ -32,14 +32,16 @@
 extern "C" {
 #endif
 
-void wb_motor_set_position(WbDeviceTag tag, double position);                  // rad or meters
-void wb_motor_set_acceleration(WbDeviceTag tag, double acceleration);          // rad/s^2 or m/s^2
-void wb_motor_set_velocity(WbDeviceTag tag, double velocity);                  // rad/s or m/s
-void wb_motor_set_force(WbDeviceTag tag, double force);                        // N
-void wb_motor_set_torque(WbDeviceTag tag, double torque);                      // N*m
-void wb_motor_set_available_force(WbDeviceTag tag, double force);              // N
-void wb_motor_set_available_torque(WbDeviceTag tag, double torque);            // N*m
-void wb_motor_set_control_pid(WbDeviceTag tag, double p, double i, double d);  // set the PID control parameters
+void wb_motor_set_position(WbDeviceTag tag, double position); // rad or meters
+void wb_motor_set_acceleration(WbDeviceTag tag,
+                               double acceleration); // rad/s^2 or m/s^2
+void wb_motor_set_velocity(WbDeviceTag tag, double velocity); // rad/s or m/s
+void wb_motor_set_force(WbDeviceTag tag, double force);       // N
+void wb_motor_set_torque(WbDeviceTag tag, double torque);     // N*m
+void wb_motor_set_available_force(WbDeviceTag tag, double force);   // N
+void wb_motor_set_available_torque(WbDeviceTag tag, double torque); // N*m
+void wb_motor_set_control_pid(WbDeviceTag tag, double p, double i,
+                              double d); // set the PID control parameters
 
 void wb_motor_enable_force_feedback(WbDeviceTag tag, int sampling_period);
 void wb_motor_disable_force_feedback(WbDeviceTag tag);

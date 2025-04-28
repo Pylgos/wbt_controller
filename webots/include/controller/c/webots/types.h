@@ -15,12 +15,14 @@
  */
 
 /**********************************************************************************/
-/* Description:  Common definitions for both the C and C++ APIs                   */
+/* Description:  Common definitions for both the C and C++ APIs */
 /**********************************************************************************/
 
-#if defined(WB_USING_CPP_API) && defined(WB_USING_C_API) && !defined(WB_ALLOW_MIXING_C_AND_CPP_API)
+#if defined(WB_USING_CPP_API) && defined(WB_USING_C_API) &&                    \
+    !defined(WB_ALLOW_MIXING_C_AND_CPP_API)
 #ifdef _MSC_VER
-#pragma message("warning: mixing the C and C++ APIs in the same controller is not supported.")
+#pragma message(                                                               \
+    "warning: mixing the C and C++ APIs in the same controller is not supported.")
 #else
 #warning "mixing the C and C++ APIs in the same controller is not supported."
 #endif
@@ -30,7 +32,7 @@
 #define WB_TYPES_H
 
 // There can be a maximum of 65534 devices on a robot (65535 being reserved)
-typedef unsigned short WbDeviceTag;  // identifier of a device
+typedef unsigned short WbDeviceTag; // identifier of a device
 
 // Opaque type definitions
 typedef struct WbImageStructPrivate *WbImageRef;
@@ -43,7 +45,7 @@ typedef struct WbFieldStructPrivate *WbFieldRef;
 // C++ code will use the standard definition of "bool"
 #ifndef __cplusplus
 
-#include <math.h>  // definition of INFINITY
+#include <math.h> // definition of INFINITY
 #ifndef INFINITY
 #define INFINITY (1.0 / 0.0)
 #endif
@@ -66,12 +68,12 @@ typedef struct WbFieldStructPrivate *WbFieldRef;
 
 #endif
 
-#define WB_ANGULAR 0  // kept for backward compatibility R2018b
+#define WB_ANGULAR 0 // kept for backward compatibility R2018b
 typedef enum { WB_ROTATIONAL = 0, WB_LINEAR } WbJointType;
 
-// Allow us to mark functions as 'deprecated' and have gcc emit a nice warning for each use.
-// Usage: int foo(char) WB_DEPRECATED;
-// and then gcc will emit a warning for each usage of the function.
+// Allow us to mark functions as 'deprecated' and have gcc emit a nice warning
+// for each use. Usage: int foo(char) WB_DEPRECATED; and then gcc will emit a
+// warning for each usage of the function.
 #ifndef WB_DEPRECATED
 #if __GNUC__ >= 3 && !defined WB_MATLAB_LOADLIBRARY
 #define WB_DEPRECATED __attribute__((deprecated))

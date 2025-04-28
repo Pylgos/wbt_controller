@@ -24,4 +24,4 @@ void mouse_set_sampling_period(int sampling_period);
 bool mouse_read_answer(int message, WbRequest *r);
 void wb_mouse_init();
 
-#endif  // MOUSE_PRIVATE_H
+#endif // MOUSE_PRIVATE_H

@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+#include "abstract_camera.h"
+#include "camera_private.h"
+#include "g_image.h"
+#include "messages.h"
+#include "remote_control_private.h"
+#include "robot_private.h"
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
@@ -21,12 +27,6 @@
 #include <string.h>
 #include <webots/camera.h>
 #include <webots/robot.h>
-#include "abstract_camera.h"
-#include "camera_private.h"
-#include "g_image.h"
-#include "messages.h"
-#include "remote_control_private.h"
-#include "robot_private.h"
 
 static WbDevice *camera_get_device(WbDeviceTag t) {
   WbDevice *d = robot_get_device_with_node(t, WB_NODE_CAMERA, true);
@@ -69,9 +69,13 @@ static void wb_camera_cleanup(WbDevice *d) {
   wb_abstract_camera_cleanup(d);
 }
 
-static void wb_camera_new(WbDevice *d, unsigned int id, int w, int h, double fov, double min_fov, double max_fov,
-                          double exposure, double focal_length, double focal_distance, double min_focal_distance,
-                          double max_focal_distance, double camnear, bool planar, bool has_recognition, bool segmentation) {
+static void wb_camera_new(WbDevice *d, unsigned int id, int w, int h,
+                          double fov, double min_fov, double max_fov,
+                          double exposure, double focal_length,
+                          double focal_distance, double min_focal_distance,
+                          double max_focal_distance, double camnear,
+                          bool planar, bool has_recognition,
+                          bool segmentation) {
   Camera *c;
   wb_camera_cleanup(d);
   wb_abstract_camera_new(d, id, w, h, fov, camnear, planar);
@@ -111,29 +115,29 @@ static void wb_camera_write_request(WbDevice *d, WbRequest *r) {
   if (c->set_fov) {
     request_write_uchar(r, C_CAMERA_SET_FOV);
     request_write_double(r, ac->fov);
-    c->set_fov = false;  // done
+    c->set_fov = false; // done
   }
   if (c->set_exposure) {
     request_write_uchar(r, C_CAMERA_SET_EXPOSURE);
     request_write_double(r, c->exposure);
-    c->set_exposure = false;  // done
+    c->set_exposure = false; // done
   }
   if (c->set_focal_distance) {
     request_write_uchar(r, C_CAMERA_SET_FOCAL);
     request_write_double(r, c->focal_distance);
-    c->set_focal_distance = false;  // done
+    c->set_focal_distance = false; // done
   }
   if (c->enable_recognition) {
     request_write_uchar(r, C_CAMERA_SET_RECOGNITION_SAMPLING_PERIOD);
     request_write_uint16(r, c->recognition_sampling_period);
-    c->enable_recognition = false;  // done
+    c->enable_recognition = false; // done
   }
   if (c->segmentation_changed) {
     request_write_uchar(r, C_CAMERA_ENABLE_SEGMENTATION);
     request_write_uchar(r, c->segmentation_enabled ? 1 : 0);
     if (c->segmentation_enabled && !c->segmentation_image)
       c->segmentation_image = image_new();
-    c->segmentation_changed = false;  // done
+    c->segmentation_changed = false; // done
   }
 }
 
@@ -143,114 +147,119 @@ static void wb_camera_read_answer(WbDevice *d, WbRequest *r) {
     return;
   unsigned int uid;
   int width, height;
-  double fov, min_fov, max_fov, camnear, exposure, focal_length, focal_distance, min_focal_distance, max_focal_distance;
+  double fov, min_fov, max_fov, camnear, exposure, focal_length, focal_distance,
+      min_focal_distance, max_focal_distance;
   bool planar, has_recognition, segmentation;
 
   AbstractCamera *ac = d->pdata;
   Camera *c = NULL;
 
   switch (command) {
-    case C_CONFIGURE:
-      uid = request_read_uint32(r);
-      width = request_read_uint16(r);
-      height = request_read_uint16(r);
-      fov = request_read_double(r);
-      camnear = request_read_double(r);
-      planar = request_read_uchar(r);
-      min_fov = request_read_double(r);
-      max_fov = request_read_double(r);
-      has_recognition = request_read_uchar(r) != 0;
-      segmentation = request_read_uchar(r) != 0;
-      exposure = request_read_double(r);
-      focal_length = request_read_double(r);
-      focal_distance = request_read_double(r);
-      min_focal_distance = request_read_double(r);
-      max_focal_distance = request_read_double(r);
+  case C_CONFIGURE:
+    uid = request_read_uint32(r);
+    width = request_read_uint16(r);
+    height = request_read_uint16(r);
+    fov = request_read_double(r);
+    camnear = request_read_double(r);
+    planar = request_read_uchar(r);
+    min_fov = request_read_double(r);
+    max_fov = request_read_double(r);
+    has_recognition = request_read_uchar(r) != 0;
+    segmentation = request_read_uchar(r) != 0;
+    exposure = request_read_double(r);
+    focal_length = request_read_double(r);
+    focal_distance = request_read_double(r);
+    min_focal_distance = request_read_double(r);
+    max_focal_distance = request_read_double(r);
 
-      // printf("new camera %u %d %d %lf %lf %d\n", uid, width, height, fov, camnear, planar);
-      wb_camera_new(d, uid, width, height, fov, min_fov, max_fov, exposure, focal_length, focal_distance, min_focal_distance,
-                    max_focal_distance, camnear, planar, has_recognition, segmentation);
-      break;
-    case C_CAMERA_RECONFIGURE:
-      c = ac->pdata;
-      ac->fov = request_read_double(r);
-      ac->camnear = request_read_double(r);
-      ac->planar = request_read_uchar(r);
-      c->min_fov = request_read_double(r);
-      c->max_fov = request_read_double(r);
-      c->has_recognition = request_read_uchar(r) != 0;
-      c->segmentation = request_read_uchar(r) != 0;
-      c->exposure = request_read_double(r);
-      c->focal_length = request_read_double(r);
-      c->focal_distance = request_read_double(r);
-      c->min_focal_distance = request_read_double(r);
-      c->max_focal_distance = request_read_double(r);
-      break;
-    case C_CAMERA_OBJECTS: {
-      c = ac->pdata;
-      int i, j;
+    // printf("new camera %u %d %d %lf %lf %d\n", uid, width, height, fov,
+    // camnear, planar);
+    wb_camera_new(d, uid, width, height, fov, min_fov, max_fov, exposure,
+                  focal_length, focal_distance, min_focal_distance,
+                  max_focal_distance, camnear, planar, has_recognition,
+                  segmentation);
+    break;
+  case C_CAMERA_RECONFIGURE:
+    c = ac->pdata;
+    ac->fov = request_read_double(r);
+    ac->camnear = request_read_double(r);
+    ac->planar = request_read_uchar(r);
+    c->min_fov = request_read_double(r);
+    c->max_fov = request_read_double(r);
+    c->has_recognition = request_read_uchar(r) != 0;
+    c->segmentation = request_read_uchar(r) != 0;
+    c->exposure = request_read_double(r);
+    c->focal_length = request_read_double(r);
+    c->focal_distance = request_read_double(r);
+    c->min_focal_distance = request_read_double(r);
+    c->max_focal_distance = request_read_double(r);
+    break;
+  case C_CAMERA_OBJECTS: {
+    c = ac->pdata;
+    int i, j;
 
-      // clean previous list
-      camera_clear_recognized_objects_list(c);
-      // get number of recognized objects
-      c->recognized_object_number = request_read_int32(r);
-      c->recognized_objects =
-        (WbCameraRecognitionObject *)malloc(c->recognized_object_number * sizeof(WbCameraRecognitionObject));
+    // clean previous list
+    camera_clear_recognized_objects_list(c);
+    // get number of recognized objects
+    c->recognized_object_number = request_read_int32(r);
+    c->recognized_objects = (WbCameraRecognitionObject *)malloc(
+        c->recognized_object_number * sizeof(WbCameraRecognitionObject));
 
-      for (i = 0; i < c->recognized_object_number; ++i) {
-        // get id of the object
-        c->recognized_objects[i].id = request_read_int32(r);
-        // get relative position of the object
-        c->recognized_objects[i].position[0] = request_read_double(r);
-        c->recognized_objects[i].position[1] = request_read_double(r);
-        c->recognized_objects[i].position[2] = request_read_double(r);
-        // get relative orientation of the object
-        c->recognized_objects[i].orientation[0] = request_read_double(r);
-        c->recognized_objects[i].orientation[1] = request_read_double(r);
-        c->recognized_objects[i].orientation[2] = request_read_double(r);
-        c->recognized_objects[i].orientation[3] = request_read_double(r);
-        // get size of the object
-        c->recognized_objects[i].size[0] = request_read_double(r);
-        c->recognized_objects[i].size[1] = request_read_double(r);
-        // get position of the object on the camera image
-        c->recognized_objects[i].position_on_image[0] = request_read_int32(r);
-        c->recognized_objects[i].position_on_image[1] = request_read_int32(r);
-        // get size of the object on the camera image
-        c->recognized_objects[i].size_on_image[0] = request_read_int32(r);
-        c->recognized_objects[i].size_on_image[1] = request_read_int32(r);
-        // get number of colors of the object
-        c->recognized_objects[i].number_of_colors = request_read_int32(r);
-        const int size = 3 * c->recognized_objects[i].number_of_colors * sizeof(double *);
-        c->recognized_objects[i].colors = (double *)malloc(size);
-        for (j = 0; j < c->recognized_objects[i].number_of_colors; j++) {
-          // get each color of the object
-          c->recognized_objects[i].colors[3 * j] = request_read_double(r);
-          c->recognized_objects[i].colors[3 * j + 1] = request_read_double(r);
-          c->recognized_objects[i].colors[3 * j + 2] = request_read_double(r);
-        }
-        // get the model of the object
-        c->recognized_objects[i].model = request_read_string(r);
+    for (i = 0; i < c->recognized_object_number; ++i) {
+      // get id of the object
+      c->recognized_objects[i].id = request_read_int32(r);
+      // get relative position of the object
+      c->recognized_objects[i].position[0] = request_read_double(r);
+      c->recognized_objects[i].position[1] = request_read_double(r);
+      c->recognized_objects[i].position[2] = request_read_double(r);
+      // get relative orientation of the object
+      c->recognized_objects[i].orientation[0] = request_read_double(r);
+      c->recognized_objects[i].orientation[1] = request_read_double(r);
+      c->recognized_objects[i].orientation[2] = request_read_double(r);
+      c->recognized_objects[i].orientation[3] = request_read_double(r);
+      // get size of the object
+      c->recognized_objects[i].size[0] = request_read_double(r);
+      c->recognized_objects[i].size[1] = request_read_double(r);
+      // get position of the object on the camera image
+      c->recognized_objects[i].position_on_image[0] = request_read_int32(r);
+      c->recognized_objects[i].position_on_image[1] = request_read_int32(r);
+      // get size of the object on the camera image
+      c->recognized_objects[i].size_on_image[0] = request_read_int32(r);
+      c->recognized_objects[i].size_on_image[1] = request_read_int32(r);
+      // get number of colors of the object
+      c->recognized_objects[i].number_of_colors = request_read_int32(r);
+      const int size =
+          3 * c->recognized_objects[i].number_of_colors * sizeof(double *);
+      c->recognized_objects[i].colors = (double *)malloc(size);
+      for (j = 0; j < c->recognized_objects[i].number_of_colors; j++) {
+        // get each color of the object
+        c->recognized_objects[i].colors[3 * j] = request_read_double(r);
+        c->recognized_objects[i].colors[3 * j + 1] = request_read_double(r);
+        c->recognized_objects[i].colors[3 * j + 2] = request_read_double(r);
       }
-      break;
+      // get the model of the object
+      c->recognized_objects[i].model = request_read_string(r);
     }
-    case C_CAMERA_SET_SEGMENTATION:
-      c = ac->pdata;
-      c->segmentation = request_read_uchar(r);
-      if (!c->segmentation)
-        c->segmentation_enabled = false;
-      break;
-    case C_CAMERA_SEGMENTATION_MEMORY_MAPPED_FILE:
-      // Cleanup the previous memory mapped file if any.
-      c = ac->pdata;
-      assert(c->segmentation);
-      if (!c->segmentation_image)
-        c->segmentation_image = image_new();  // prevent controller crash
-      image_cleanup(c->segmentation_image);
-      image_setup(c->segmentation_image, r);
-      break;
-    default:
-      ROBOT_ASSERT(0);
-      break;
+    break;
+  }
+  case C_CAMERA_SET_SEGMENTATION:
+    c = ac->pdata;
+    c->segmentation = request_read_uchar(r);
+    if (!c->segmentation)
+      c->segmentation_enabled = false;
+    break;
+  case C_CAMERA_SEGMENTATION_MEMORY_MAPPED_FILE:
+    // Cleanup the previous memory mapped file if any.
+    c = ac->pdata;
+    assert(c->segmentation);
+    if (!c->segmentation_image)
+      c->segmentation_image = image_new(); // prevent controller crash
+    image_cleanup(c->segmentation_image);
+    image_setup(c->segmentation_image, r);
+    break;
+  default:
+    ROBOT_ASSERT(0);
+    break;
   }
 }
 
@@ -296,14 +305,16 @@ unsigned char *wbr_camera_get_image_buffer(WbDeviceTag tag) {
   return wbr_abstract_camera_get_image_buffer(d);
 }
 
-void wbr_camera_recognition_set_object(WbDeviceTag tag, const WbCameraRecognitionObject *objects, int object_number) {
+void wbr_camera_recognition_set_object(WbDeviceTag tag,
+                                       const WbCameraRecognitionObject *objects,
+                                       int object_number) {
   Camera *c = camera_get_struct(tag);
   if (c) {
     camera_clear_recognized_objects_list(c);
     // get number of recognized objects
     c->recognized_object_number = object_number;
-    c->recognized_objects =
-      (WbCameraRecognitionObject *)malloc(c->recognized_object_number * sizeof(WbCameraRecognitionObject));
+    c->recognized_objects = (WbCameraRecognitionObject *)malloc(
+        c->recognized_object_number * sizeof(WbCameraRecognitionObject));
     int i, j;
     for (i = 0; i < c->recognized_object_number; ++i) {
       // set id of the object
@@ -321,14 +332,17 @@ void wbr_camera_recognition_set_object(WbDeviceTag tag, const WbCameraRecognitio
       c->recognized_objects[i].size[0] = objects[i].size[0];
       c->recognized_objects[i].size[1] = objects[i].size[1];
       // set position of the object on the camera image
-      c->recognized_objects[i].position_on_image[0] = objects[i].position_on_image[0];
-      c->recognized_objects[i].position_on_image[1] = objects[i].position_on_image[1];
+      c->recognized_objects[i].position_on_image[0] =
+          objects[i].position_on_image[0];
+      c->recognized_objects[i].position_on_image[1] =
+          objects[i].position_on_image[1];
       // set size of the object on the camera image
       c->recognized_objects[i].size_on_image[0] = objects[i].size_on_image[0];
       c->recognized_objects[i].size_on_image[1] = objects[i].size_on_image[1];
       // set number of colors of the object
       c->recognized_objects[i].number_of_colors = objects[i].number_of_colors;
-      const int size = 3 * c->recognized_objects[i].number_of_colors * sizeof(double *);
+      const int size =
+          3 * c->recognized_objects[i].number_of_colors * sizeof(double *);
       c->recognized_objects[i].colors = (double *)malloc(size);
       for (j = 0; j < c->recognized_objects[i].number_of_colors; j++) {
         // set each color of the object
@@ -348,7 +362,8 @@ void wbr_camera_recognition_set_object(WbDeviceTag tag, const WbCameraRecognitio
 
 void wb_camera_enable(WbDeviceTag tag, int sampling_period) {
   if (sampling_period < 0) {
-    fprintf(stderr, "Error: %s() called with negative sampling period.\n", __FUNCTION__);
+    fprintf(stderr, "Error: %s() called with negative sampling period.\n",
+            __FUNCTION__);
     return;
   }
 
@@ -430,13 +445,20 @@ void wb_camera_set_fov(WbDeviceTag tag, double fov) {
     return;
   }
   if (!ac->planar && (fov < 0.0 || fov > 2.0 * M_PI)) {
-    fprintf(stderr, "Error: %s() called with 'fov' argument outside of the [0, 2.0*pi] range.\n", __FUNCTION__);
+    fprintf(stderr,
+            "Error: %s() called with 'fov' argument outside of the [0, 2.0*pi] "
+            "range.\n",
+            __FUNCTION__);
     in_range = false;
   } else if (ac->planar && (fov < 0.0 || fov > M_PI)) {
-    fprintf(stderr, "Error: %s() called with 'fov' argument outside of the [0, pi] range.\n", __FUNCTION__);
+    fprintf(stderr,
+            "Error: %s() called with 'fov' argument outside of the [0, pi] "
+            "range.\n",
+            __FUNCTION__);
     in_range = false;
   } else if (fov < c->min_fov || fov > c->max_fov) {
-    fprintf(stderr, "Error: %s() out of zoom range [%f, %f].\n", __FUNCTION__, c->min_fov, c->max_fov);
+    fprintf(stderr, "Error: %s() out of zoom range [%f, %f].\n", __FUNCTION__,
+            c->min_fov, c->max_fov);
     in_range = false;
   }
   if (in_range) {
@@ -476,7 +498,8 @@ void wb_camera_set_exposure(WbDeviceTag tag, double exposure) {
   if (!c)
     fprintf(stderr, "Error: %s(): invalid device tag.\n", __FUNCTION__);
   else if (exposure < 0)
-    fprintf(stderr, "Error: 'exposure' argument of %s() can't be negative.\n", __FUNCTION__);
+    fprintf(stderr, "Error: 'exposure' argument of %s() can't be negative.\n",
+            __FUNCTION__);
   else {
     c->exposure = exposure;
     c->set_exposure = true;
@@ -530,10 +553,13 @@ void wb_camera_set_focal_distance(WbDeviceTag tag, double focal_distance) {
     robot_mutex_unlock();
     return;
   } else if (!ac->planar) {
-    fprintf(stderr, "Error: %s() can only be called on a planar camera.\n", __FUNCTION__);
+    fprintf(stderr, "Error: %s() can only be called on a planar camera.\n",
+            __FUNCTION__);
     in_range = false;
-  } else if (focal_distance < c->min_focal_distance || focal_distance > c->max_focal_distance) {
-    fprintf(stderr, "Error: %s() out of focus range [%f, %f].\n", __FUNCTION__, c->min_focal_distance, c->max_focal_distance);
+  } else if (focal_distance < c->min_focal_distance ||
+             focal_distance > c->max_focal_distance) {
+    fprintf(stderr, "Error: %s() out of focus range [%f, %f].\n", __FUNCTION__,
+            c->min_focal_distance, c->max_focal_distance);
     in_range = false;
   }
   if (in_range) {
@@ -553,7 +579,8 @@ double wb_camera_get_near(WbDeviceTag tag) {
 
 void wb_camera_recognition_enable(WbDeviceTag tag, int sampling_period) {
   if (sampling_period < 0) {
-    fprintf(stderr, "Error: %s() called with negative sampling period.\n", __FUNCTION__);
+    fprintf(stderr, "Error: %s() called with negative sampling period.\n",
+            __FUNCTION__);
     return;
   }
 
@@ -562,7 +589,9 @@ void wb_camera_recognition_enable(WbDeviceTag tag, int sampling_period) {
 
   if (c) {
     if (!c->has_recognition)
-      fprintf(stderr, "Error: %s() called on a Camera without Recognition node.\n", __FUNCTION__);
+      fprintf(stderr,
+              "Error: %s() called on a Camera without Recognition node.\n",
+              __FUNCTION__);
     else {
       c->enable_recognition = true;
       c->recognition_sampling_period = sampling_period;
@@ -581,7 +610,9 @@ void wb_camera_recognition_disable(WbDeviceTag tag) {
     fprintf(stderr, "Error: %s(): invalid device tag.\n", __FUNCTION__);
     should_return = true;
   } else if (!c->has_recognition) {
-    fprintf(stderr, "Error: %s() called on a Camera without Recognition node.\n", __FUNCTION__);
+    fprintf(stderr,
+            "Error: %s() called on a Camera without Recognition node.\n",
+            __FUNCTION__);
     should_return = true;
   }
   robot_mutex_unlock();
@@ -595,7 +626,9 @@ int wb_camera_recognition_get_sampling_period(WbDeviceTag tag) {
   const Camera *c = camera_get_struct(tag);
   if (c) {
     if (!c->has_recognition)
-      fprintf(stderr, "Error: %s() called on a Camera without Recognition node.\n", __FUNCTION__);
+      fprintf(stderr,
+              "Error: %s() called on a Camera without Recognition node.\n",
+              __FUNCTION__);
     else
       sampling_period = c->recognition_sampling_period;
   } else
@@ -610,9 +643,14 @@ int wb_camera_recognition_get_number_of_objects(WbDeviceTag tag) {
   const Camera *c = camera_get_struct(tag);
   if (c) {
     if (!c->has_recognition)
-      fprintf(stderr, "Error: %s() called on a Camera without Recognition node.\n", __FUNCTION__);
+      fprintf(stderr,
+              "Error: %s() called on a Camera without Recognition node.\n",
+              __FUNCTION__);
     else if (c->recognition_sampling_period == 0)
-      fprintf(stderr, "Error: %s() called for a disabled device! Please use: wb_camera_recognition_enable().\n", __FUNCTION__);
+      fprintf(stderr,
+              "Error: %s() called for a disabled device! Please use: "
+              "wb_camera_recognition_enable().\n",
+              __FUNCTION__);
     else
       result = c->recognized_object_number;
   } else
@@ -633,15 +671,21 @@ bool wb_camera_has_recognition(WbDeviceTag tag) {
   return has_recognition;
 }
 
-const WbCameraRecognitionObject *wb_camera_recognition_get_objects(WbDeviceTag tag) {
+const WbCameraRecognitionObject *
+wb_camera_recognition_get_objects(WbDeviceTag tag) {
   const WbCameraRecognitionObject *result = 0;
   robot_mutex_lock();
   const Camera *c = camera_get_struct(tag);
   if (c) {
     if (!c->has_recognition)
-      fprintf(stderr, "Error: %s() called on a Camera without Recognition node.\n", __FUNCTION__);
+      fprintf(stderr,
+              "Error: %s() called on a Camera without Recognition node.\n",
+              __FUNCTION__);
     else if (c->recognition_sampling_period == 0)
-      fprintf(stderr, "Error: %s() called for a disabled device! Please use: wb_camera_recognition_enable().\n", __FUNCTION__);
+      fprintf(stderr,
+              "Error: %s() called for a disabled device! Please use: "
+              "wb_camera_recognition_enable().\n",
+              __FUNCTION__);
     else
       result = c->recognized_objects;
   } else
@@ -661,7 +705,10 @@ const unsigned char *wb_camera_get_image(WbDeviceTag tag) {
   }
 
   if (ac->sampling_period <= 0) {
-    fprintf(stderr, "Error: %s() called for a disabled device! Please use: wb_camera_enable().\n", __FUNCTION__);
+    fprintf(stderr,
+            "Error: %s() called for a disabled device! Please use: "
+            "wb_camera_enable().\n",
+            __FUNCTION__);
     robot_mutex_unlock();
     return NULL;
   }
@@ -677,16 +724,22 @@ const unsigned char *wb_camera_get_image(WbDeviceTag tag) {
 
 int wb_camera_save_image(WbDeviceTag tag, const char *filename, int quality) {
   if (!filename || !filename[0]) {
-    fprintf(stderr, "Error: %s() called with NULL or empty 'filename' argument.\n", __FUNCTION__);
+    fprintf(stderr,
+            "Error: %s() called with NULL or empty 'filename' argument.\n",
+            __FUNCTION__);
     return -1;
   }
   unsigned char type = g_image_get_type(filename);
   if (type != G_IMAGE_PNG && type != G_IMAGE_JPEG) {
-    fprintf(stderr, "Error: %s() called with unsupported image format (should be PNG or JPEG).\n", __FUNCTION__);
+    fprintf(stderr,
+            "Error: %s() called with unsupported image format (should be PNG "
+            "or JPEG).\n",
+            __FUNCTION__);
     return -1;
   }
   if (type == G_IMAGE_JPEG && (quality < 1 || quality > 100)) {
-    fprintf(stderr, "Error: %s() called with invalid 'quality' argument.\n", __FUNCTION__);
+    fprintf(stderr, "Error: %s() called with invalid 'quality' argument.\n",
+            __FUNCTION__);
     return -1;
   }
 
@@ -715,7 +768,8 @@ int wb_camera_save_image(WbDeviceTag tag, const char *filename, int quality) {
   return ret;
 }
 
-const WbCameraRecognitionObject *wb_camera_recognition_get_object(WbDeviceTag tag, int index) {
+const WbCameraRecognitionObject *
+wb_camera_recognition_get_object(WbDeviceTag tag, int index) {
   const Camera *c = camera_get_struct(tag);
   if (!c) {
     fprintf(stderr, "Error: %s(): invalid device tag.\n", __FUNCTION__);
@@ -747,17 +801,24 @@ void wb_camera_recognition_enable_segmentation(WbDeviceTag tag) {
     return;
   }
   if (!c->has_recognition) {
-    fprintf(stderr, "Error: %s() called on a Camera without Recognition node.\n", __FUNCTION__);
+    fprintf(stderr,
+            "Error: %s() called on a Camera without Recognition node.\n",
+            __FUNCTION__);
     robot_mutex_unlock();
     return;
   }
   if (c->recognition_sampling_period == 0) {
-    fprintf(stderr, "Error: %s() called for a disabled device! Please use: wb_camera_recognition_enable().\n", __FUNCTION__);
+    fprintf(stderr,
+            "Error: %s() called for a disabled device! Please use: "
+            "wb_camera_recognition_enable().\n",
+            __FUNCTION__);
     robot_mutex_unlock();
     return;
   }
   if (!c->segmentation) {
-    fprintf(stderr, "Error: %s(): segmentation is disabled in Recognition node.\n", __FUNCTION__);
+    fprintf(stderr,
+            "Error: %s(): segmentation is disabled in Recognition node.\n",
+            __FUNCTION__);
     robot_mutex_unlock();
     return;
   }
@@ -777,7 +838,9 @@ void wb_camera_recognition_disable_segmentation(WbDeviceTag tag) {
     return;
   }
   if (!c->has_recognition) {
-    fprintf(stderr, "Error: %s() called on a Camera without Recognition node.\n", __FUNCTION__);
+    fprintf(stderr,
+            "Error: %s() called on a Camera without Recognition node.\n",
+            __FUNCTION__);
     robot_mutex_unlock();
     return;
   }
@@ -797,7 +860,9 @@ bool wb_camera_recognition_is_segmentation_enabled(WbDeviceTag tag) {
     return false;
   }
   if (!c->has_recognition) {
-    fprintf(stderr, "Error: %s() called on a Camera without Recognition node.\n", __FUNCTION__);
+    fprintf(stderr,
+            "Error: %s() called on a Camera without Recognition node.\n",
+            __FUNCTION__);
     robot_mutex_unlock();
     return false;
   }
@@ -806,7 +871,8 @@ bool wb_camera_recognition_is_segmentation_enabled(WbDeviceTag tag) {
   return is_segmentation_enabled;
 }
 
-const unsigned char *wb_camera_recognition_get_segmentation_image(WbDeviceTag tag) {
+const unsigned char *
+wb_camera_recognition_get_segmentation_image(WbDeviceTag tag) {
   robot_mutex_lock();
   Camera *c = camera_get_struct(tag);
   if (!c) {
@@ -815,7 +881,9 @@ const unsigned char *wb_camera_recognition_get_segmentation_image(WbDeviceTag ta
     return NULL;
   }
   if (!c->has_recognition) {
-    fprintf(stderr, "Error: %s() called on a Camera without Recognition node.\n", __FUNCTION__);
+    fprintf(stderr,
+            "Error: %s() called on a Camera without Recognition node.\n",
+            __FUNCTION__);
     robot_mutex_unlock();
     return NULL;
   }
@@ -824,7 +892,9 @@ const unsigned char *wb_camera_recognition_get_segmentation_image(WbDeviceTag ta
     return NULL;
   }
   if (!c->segmentation_enabled) {
-    fprintf(stderr, "Error: %s(): segmentation is disabled! Please use: wb_camera_recognition_enable_segmentation().\n",
+    fprintf(stderr,
+            "Error: %s(): segmentation is disabled! Please use: "
+            "wb_camera_recognition_enable_segmentation().\n",
             __FUNCTION__);
     robot_mutex_unlock();
     return NULL;
@@ -837,18 +907,26 @@ const unsigned char *wb_camera_recognition_get_segmentation_image(WbDeviceTag ta
   return c->segmentation_image->data;
 }
 
-int wb_camera_recognition_save_segmentation_image(WbDeviceTag tag, const char *filename, int quality) {
+int wb_camera_recognition_save_segmentation_image(WbDeviceTag tag,
+                                                  const char *filename,
+                                                  int quality) {
   if (!filename || !filename[0]) {
-    fprintf(stderr, "Error: %s() called with NULL or empty 'filename' argument.\n", __FUNCTION__);
+    fprintf(stderr,
+            "Error: %s() called with NULL or empty 'filename' argument.\n",
+            __FUNCTION__);
     return -1;
   }
   unsigned char type = g_image_get_type(filename);
   if (type != G_IMAGE_PNG && type != G_IMAGE_JPEG) {
-    fprintf(stderr, "Error: %s() called with unsupported image format (should be PNG or JPEG).\n", __FUNCTION__);
+    fprintf(stderr,
+            "Error: %s() called with unsupported image format (should be PNG "
+            "or JPEG).\n",
+            __FUNCTION__);
     return -1;
   }
   if (type == G_IMAGE_JPEG && (quality < 1 || quality > 100)) {
-    fprintf(stderr, "Error: %s() called with invalid 'quality' argument.\n", __FUNCTION__);
+    fprintf(stderr, "Error: %s() called with invalid 'quality' argument.\n",
+            __FUNCTION__);
     return -1;
   }
 
@@ -861,7 +939,9 @@ int wb_camera_recognition_save_segmentation_image(WbDeviceTag tag, const char *f
     return -1;
   }
   if (!c->segmentation_image) {
-    fprintf(stderr, "Error: %s() called before rendering a valid segmentation image.\n", __FUNCTION__);
+    fprintf(stderr,
+            "Error: %s() called before rendering a valid segmentation image.\n",
+            __FUNCTION__);
     robot_mutex_unlock();
     return -1;
   }

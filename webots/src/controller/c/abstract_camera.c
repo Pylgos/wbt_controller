@@ -18,17 +18,17 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#else  // memory mapped files
+#else // memory mapped files
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #endif
+#include "messages.h"
+#include "robot_private.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <webots/robot.h>
-#include "messages.h"
-#include "robot_private.h"
 
 void wb_abstract_camera_cleanup(WbDevice *d) {
   AbstractCamera *c = d->pdata;
@@ -39,7 +39,8 @@ void wb_abstract_camera_cleanup(WbDevice *d) {
   free(c);
 }
 
-void wb_abstract_camera_new(WbDevice *d, unsigned int id, int w, int h, double fov, double camnear, bool planar) {
+void wb_abstract_camera_new(WbDevice *d, unsigned int id, int w, int h,
+                            double fov, double camnear, bool planar) {
   wb_abstract_camera_cleanup(d);
   AbstractCamera *c = malloc(sizeof(AbstractCamera));
   c->enable = false;
@@ -60,24 +61,25 @@ void wb_abstract_camera_write_request(WbDevice *d, WbRequest *r) {
   if (c->enable) {
     request_write_uchar(r, C_SET_SAMPLING_PERIOD);
     request_write_uint16(r, c->sampling_period);
-    c->enable = false;  // done
+    c->enable = false; // done
   }
 }
 
-bool wb_abstract_camera_handle_command(WbDevice *d, WbRequest *r, unsigned char command) {
+bool wb_abstract_camera_handle_command(WbDevice *d, WbRequest *r,
+                                       unsigned char command) {
   bool command_handled = true;
   AbstractCamera *c = d->pdata;
 
   switch (command) {
-    case C_CAMERA_MEMORY_MAPPED_FILE:
-      // Cleanup the previous memory mapped file if any.
-      image_cleanup(c->image);
-      image_setup(c->image, r);
-      break;
+  case C_CAMERA_MEMORY_MAPPED_FILE:
+    // Cleanup the previous memory mapped file if any.
+    image_cleanup(c->image);
+    image_setup(c->image, r);
+    break;
 
-    default:
-      command_handled = false;
-      break;
+  default:
+    command_handled = false;
+    break;
   }
   return command_handled;
 }

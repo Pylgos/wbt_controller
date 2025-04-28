@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/distance_sensor.h>
 #include <webots/DistanceSensor.hpp>
+#include <webots/distance_sensor.h>
 
 using namespace webots;
 
@@ -22,9 +22,7 @@ void DistanceSensor::enable(int sampling_period) {
   wb_distance_sensor_enable(getTag(), sampling_period);
 }
 
-void DistanceSensor::disable() {
-  wb_distance_sensor_disable(getTag());
-}
+void DistanceSensor::disable() { wb_distance_sensor_disable(getTag()); }
 
 int DistanceSensor::getSamplingPeriod() const {
   return wb_distance_sensor_get_sampling_period(getTag());

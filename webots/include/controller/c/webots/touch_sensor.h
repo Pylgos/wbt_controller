@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the TouchSensor node          */
+/* Description:  Webots C programming interface for the TouchSensor node */
 /**********************************************************************************/
 
 #ifndef WB_TOUCH_SENSOR_H
@@ -39,7 +39,11 @@ const double *wb_touch_sensor_get_lookup_table(WbDeviceTag tag);
 double wb_touch_sensor_get_value(WbDeviceTag tag);
 const double *wb_touch_sensor_get_values(WbDeviceTag tag);
 
-typedef enum { WB_TOUCH_SENSOR_BUMPER = 0, WB_TOUCH_SENSOR_FORCE, WB_TOUCH_SENSOR_FORCE3D } WbTouchSensorType;
+typedef enum {
+  WB_TOUCH_SENSOR_BUMPER = 0,
+  WB_TOUCH_SENSOR_FORCE,
+  WB_TOUCH_SENSOR_FORCE3D
+} WbTouchSensorType;
 
 WbTouchSensorType wb_touch_sensor_get_type(WbDeviceTag tag);
 

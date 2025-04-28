@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
+#include "device_private.h"
+#include "messages.h"
+#include "robot_private.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <webots/light_sensor.h>
 #include <webots/nodes.h>
 #include <webots/robot.h>
-#include "device_private.h"
-#include "messages.h"
-#include "robot_private.h"
 
 // Static functions
 
 typedef struct {
-  bool enable;          // need to enable device ?
-  int sampling_period;  // milliseconds
+  bool enable;         // need to enable device ?
+  int sampling_period; // milliseconds
   double value;
   int lookup_table_size;
   double *lookup_table;
@@ -51,22 +51,23 @@ static LightSensor *light_sensor_get_struct(WbDeviceTag t) {
 static void light_sensor_read_answer(WbDevice *d, WbRequest *r) {
   LightSensor *ls = (LightSensor *)d->pdata;
   switch (request_read_uchar(r)) {
-    case C_LIGHT_SENSOR_DATA:
-      ls->value = request_read_double(r);
-      break;
-    case C_CONFIGURE:
-      ls->lookup_table_size = request_read_int32(r);
-      free(ls->lookup_table);
-      ls->lookup_table = NULL;
-      if (ls->lookup_table_size > 0) {
-        ls->lookup_table = (double *)malloc(sizeof(double) * ls->lookup_table_size * 3);
-        for (int i = 0; i < ls->lookup_table_size * 3; i++)
-          ls->lookup_table[i] = request_read_double(r);
-      }
-      break;
-    default:
-      ROBOT_ASSERT(0);  // should never be reached
-      break;
+  case C_LIGHT_SENSOR_DATA:
+    ls->value = request_read_double(r);
+    break;
+  case C_CONFIGURE:
+    ls->lookup_table_size = request_read_int32(r);
+    free(ls->lookup_table);
+    ls->lookup_table = NULL;
+    if (ls->lookup_table_size > 0) {
+      ls->lookup_table =
+          (double *)malloc(sizeof(double) * ls->lookup_table_size * 3);
+      for (int i = 0; i < ls->lookup_table_size * 3; i++)
+        ls->lookup_table[i] = request_read_double(r);
+    }
+    break;
+  default:
+    ROBOT_ASSERT(0); // should never be reached
+    break;
   }
 }
 
@@ -99,7 +100,7 @@ static void light_sensor_write_request(WbDevice *d, WbRequest *r) {
   if (ls->enable) {
     request_write_uchar(r, C_SET_SAMPLING_PERIOD);
     request_write_uint16(r, ls->sampling_period);
-    ls->enable = false;  // done
+    ls->enable = false; // done
   }
 }
 
@@ -137,7 +138,8 @@ void wb_light_sensor_init(WbDevice *d) {
 
 void wb_light_sensor_enable(WbDeviceTag tag, int sampling_period) {
   if (sampling_period < 0) {
-    fprintf(stderr, "Error: %s() called with negative sampling period.\n", __FUNCTION__);
+    fprintf(stderr, "Error: %s() called with negative sampling period.\n",
+            __FUNCTION__);
     return;
   }
 
@@ -177,7 +179,10 @@ double wb_light_sensor_get_value(WbDeviceTag tag) {
   const LightSensor *ls = light_sensor_get_struct(tag);
   if (ls) {
     if (ls->sampling_period <= 0)
-      fprintf(stderr, "Error: %s() called for a disabled device! Please use: wb_light_sensor_enable().\n", __FUNCTION__);
+      fprintf(stderr,
+              "Error: %s() called for a disabled device! Please use: "
+              "wb_light_sensor_enable().\n",
+              __FUNCTION__);
     value = ls->value;
   } else
     fprintf(stderr, "Error: %s(): invalid device tag.\n", __FUNCTION__);

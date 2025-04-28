@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the Speaker node              */
+/* Description:  Webots C programming interface for the Speaker node */
 /**********************************************************************************/
 
 #ifndef WB_SPEAKER_H
@@ -28,8 +28,9 @@
 extern "C" {
 #endif
 
-void wb_speaker_play_sound(WbDeviceTag left, WbDeviceTag right, const char *sound, double volume, double pitch, double balance,
-                           bool loop);
+void wb_speaker_play_sound(WbDeviceTag left, WbDeviceTag right,
+                           const char *sound, double volume, double pitch,
+                           double balance, bool loop);
 void wb_speaker_stop(WbDeviceTag tag, const char *sound);
 bool wb_speaker_is_sound_playing(WbDeviceTag tag, const char *sound);
 

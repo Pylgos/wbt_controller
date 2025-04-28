@@ -18,13 +18,13 @@
 // this file is the API code for the VacuumGripper device
 //***************************************************************************
 
+#include "device_private.h"
+#include "messages.h"
+#include "robot_private.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <webots/nodes.h>
 #include <webots/vacuum_gripper.h>
-#include "device_private.h"
-#include "messages.h"
-#include "robot_private.h"
 
 // Static functions
 
@@ -58,7 +58,8 @@ static void vacuum_gripper_write_request(WbDevice *d, WbRequest *r) {
     vc->enable_presence = false;
   }
   if (vc->toggle) {
-    request_write_uchar(r, vc->is_on ? C_VACUUM_GRIPPER_TURN_ON : C_VACUUM_GRIPPER_TURN_OFF);
+    request_write_uchar(r, vc->is_on ? C_VACUUM_GRIPPER_TURN_ON
+                                     : C_VACUUM_GRIPPER_TURN_OFF);
     vc->toggle = false;
   }
 }
@@ -66,20 +67,18 @@ static void vacuum_gripper_write_request(WbDevice *d, WbRequest *r) {
 static void vacuum_gripper_read_answer(WbDevice *d, WbRequest *r) {
   VacuumGripper *vc = d->pdata;
   switch (request_read_uchar(r)) {
-    case C_VACUUM_GRIPPER_GET_PRESENCE:
-      vc->presence = request_read_uchar(r) == 1;
-      break;
-    case C_CONFIGURE:
-      vc->is_on = request_read_uchar(r);
-      break;
-    default:
-      ROBOT_ASSERT(0);
+  case C_VACUUM_GRIPPER_GET_PRESENCE:
+    vc->presence = request_read_uchar(r) == 1;
+    break;
+  case C_CONFIGURE:
+    vc->is_on = request_read_uchar(r);
+    break;
+  default:
+    ROBOT_ASSERT(0);
   }
 }
 
-static void vacuum_gripper_cleanup(WbDevice *d) {
-  free(d->pdata);
-}
+static void vacuum_gripper_cleanup(WbDevice *d) { free(d->pdata); }
 
 static void vacuum_gripper_toggle_remote(WbDevice *d, WbRequest *r) {
   VacuumGripper *vc = d->pdata;
@@ -102,7 +101,8 @@ void wb_vacuum_gripper_init(WbDevice *d) {
 
 void wb_vacuum_gripper_enable_presence(WbDeviceTag tag, int sampling_period) {
   if (sampling_period < 0) {
-    fprintf(stderr, "Error: %s() called with negative sampling period.\n", __FUNCTION__);
+    fprintf(stderr, "Error: %s() called with negative sampling period.\n",
+            __FUNCTION__);
     return;
   }
 
@@ -164,7 +164,9 @@ bool wb_vacuum_gripper_get_presence(WbDeviceTag tag) {
   const VacuumGripper *vc = vacuum_gripper_get_struct(tag);
   if (vc) {
     if (vc->presence_sampling_period <= 0)
-      fprintf(stderr, "Error: %s() called for a disabled device! Please use: wb_vacuum_gripper_enable_presence().\n",
+      fprintf(stderr,
+              "Error: %s() called for a disabled device! Please use: "
+              "wb_vacuum_gripper_enable_presence().\n",
               __FUNCTION__);
     result = vc->presence;
   } else

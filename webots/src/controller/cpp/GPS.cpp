@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/gps.h>
 #include <webots/GPS.hpp>
+#include <webots/gps.h>
 
 #include <cstdlib>
 
@@ -25,21 +25,15 @@ void GPS::enable(int sampling_period) {
   wb_gps_enable(getTag(), sampling_period);
 }
 
-void GPS::disable() {
-  wb_gps_disable(getTag());
-}
+void GPS::disable() { wb_gps_disable(getTag()); }
 
 int GPS::getSamplingPeriod() const {
   return wb_gps_get_sampling_period(getTag());
 }
 
-const double *GPS::getValues() const {
-  return wb_gps_get_values(getTag());
-}
+const double *GPS::getValues() const { return wb_gps_get_values(getTag()); }
 
-double GPS::getSpeed() const {
-  return wb_gps_get_speed(getTag());
-}
+double GPS::getSpeed() const { return wb_gps_get_speed(getTag()); }
 
 const double *GPS::getSpeedVector() const {
   return wb_gps_get_speed_vector(getTag());
@@ -50,7 +44,8 @@ const GPS::CoordinateSystem GPS::getCoordinateSystem() const {
 }
 
 string GPS::convertToDegreesMinutesSeconds(double decimalDegree) {
-  const char *coordinatesString = wb_gps_convert_to_degrees_minutes_seconds(decimalDegree);
+  const char *coordinatesString =
+      wb_gps_convert_to_degrees_minutes_seconds(decimalDegree);
   std::string coordinates = string(coordinatesString);
   free(static_cast<void *>(const_cast<char *>(coordinatesString)));
   return coordinates;

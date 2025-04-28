@@ -23,20 +23,21 @@
 char *percent_encode(const char *source) {
   const int length = strlen(source);
 
-  char *buffer = malloc(length * 3 + 1);  // maximum size
+  char *buffer = malloc(length * 3 + 1); // maximum size
   int j = 0;
   for (int i = 0; i < length + 1; i++) {
     unsigned char c = source[i];
-    if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '\0' || c == '-' || c == '_' ||
+    if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
+        (c >= '0' && c <= '9') || c == '\0' || c == '-' || c == '_' ||
         c == '~' || c == '.')
       buffer[j++] = c;
     else {
       int n;
-      if (c >= 0xF0)  // UTF-8 sequence with 4 chars
+      if (c >= 0xF0) // UTF-8 sequence with 4 chars
         n = 4;
-      else if (c >= 0xE0)  // UTF-8 sequence with 3 chars
+      else if (c >= 0xE0) // UTF-8 sequence with 3 chars
         n = 3;
-      else if (c >= 0xC0)  // UTF-8 sequence with 2 chars
+      else if (c >= 0xC0) // UTF-8 sequence with 2 chars
         n = 2;
       else
         n = 1;
@@ -46,7 +47,7 @@ char *percent_encode(const char *source) {
       j += 3 * n;
     }
   }
-  char *new_buffer = realloc(buffer, j);  // adjust to used size
+  char *new_buffer = realloc(buffer, j); // adjust to used size
   if (new_buffer == NULL)
     free(buffer);
   return new_buffer;

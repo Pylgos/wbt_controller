@@ -13,14 +13,16 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/speaker.h>
 #include <webots/Speaker.hpp>
+#include <webots/speaker.h>
 
 using namespace webots;
 
-void Speaker::playSound(Speaker *left, Speaker *right, const std::string &sound, double volume, double pitch, double balance,
+void Speaker::playSound(Speaker *left, Speaker *right, const std::string &sound,
+                        double volume, double pitch, double balance,
                         bool loop) {
-  wb_speaker_play_sound(left->getTag(), right->getTag(), sound.c_str(), volume, pitch, balance, loop);
+  wb_speaker_play_sound(left->getTag(), right->getTag(), sound.c_str(), volume,
+                        pitch, balance, loop);
 }
 
 bool Speaker::isSoundPlaying(const std::string &sound) const {
@@ -51,6 +53,4 @@ void Speaker::speak(const std::string &text, double volume) {
   wb_speaker_speak(getTag(), text.c_str(), volume);
 }
 
-bool Speaker::isSpeaking() const {
-  return wb_speaker_is_speaking(getTag());
-}
+bool Speaker::isSpeaking() const { return wb_speaker_is_speaking(getTag()); }

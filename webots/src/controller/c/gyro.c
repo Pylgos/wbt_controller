@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+#include "device_private.h"
+#include "messages.h"
+#include "robot_private.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <webots/gyro.h>
 #include <webots/nodes.h>
-#include "device_private.h"
-#include "messages.h"
-#include "robot_private.h"
 
 typedef struct {
-  int enable;           // need to enable device ?
-  int sampling_period;  // milliseconds
-  double velocity[3];   // angular velocity
+  int enable;          // need to enable device ?
+  int sampling_period; // milliseconds
+  double velocity[3];  // angular velocity
   int lookup_table_size;
   double *lookup_table;
 } Gyro;
@@ -52,24 +52,25 @@ static Gyro *gyro_get_struct(WbDeviceTag t) {
 static void gyro_read_answer(WbDevice *d, WbRequest *r) {
   Gyro *gyro = d->pdata;
   switch (request_read_uchar(r)) {
-    case C_GYRO_DATA:
-      gyro->velocity[0] = request_read_double(r);
-      gyro->velocity[1] = request_read_double(r);
-      gyro->velocity[2] = request_read_double(r);
-      break;
-    case C_CONFIGURE:
-      gyro->lookup_table_size = request_read_int32(r);
-      free(gyro->lookup_table);
-      gyro->lookup_table = NULL;
-      if (gyro->lookup_table_size > 0) {
-        gyro->lookup_table = (double *)malloc(sizeof(double) * gyro->lookup_table_size * 3);
-        for (int i = 0; i < gyro->lookup_table_size * 3; i++)
-          gyro->lookup_table[i] = request_read_double(r);
-      }
-      break;
-    default:
-      ROBOT_ASSERT(0);  // should never be reached
-      break;
+  case C_GYRO_DATA:
+    gyro->velocity[0] = request_read_double(r);
+    gyro->velocity[1] = request_read_double(r);
+    gyro->velocity[2] = request_read_double(r);
+    break;
+  case C_CONFIGURE:
+    gyro->lookup_table_size = request_read_int32(r);
+    free(gyro->lookup_table);
+    gyro->lookup_table = NULL;
+    if (gyro->lookup_table_size > 0) {
+      gyro->lookup_table =
+          (double *)malloc(sizeof(double) * gyro->lookup_table_size * 3);
+      for (int i = 0; i < gyro->lookup_table_size * 3; i++)
+        gyro->lookup_table[i] = request_read_double(r);
+    }
+    break;
+  default:
+    ROBOT_ASSERT(0); // should never be reached
+    break;
   }
 }
 
@@ -102,7 +103,7 @@ static void gyro_write_request(WbDevice *d, WbRequest *r) {
   if (gyro->enable) {
     request_write_uchar(r, C_SET_SAMPLING_PERIOD);
     request_write_uint16(r, gyro->sampling_period);
-    gyro->enable = false;  // done
+    gyro->enable = false; // done
   }
 }
 
@@ -142,7 +143,8 @@ void wb_gyro_init(WbDevice *d) {
 
 void wb_gyro_enable(WbDeviceTag tag, int sampling_period) {
   if (sampling_period < 0) {
-    fprintf(stderr, "Error: %s() called with negative sampling period.\n", __FUNCTION__);
+    fprintf(stderr, "Error: %s() called with negative sampling period.\n",
+            __FUNCTION__);
     return;
   }
 
@@ -182,7 +184,10 @@ const double *wb_gyro_get_values(WbDeviceTag tag) {
   const Gyro *gyro = gyro_get_struct(tag);
   if (gyro) {
     if (gyro->sampling_period <= 0)
-      fprintf(stderr, "Error: %s() called for a disabled device! Please use: wb_gyro_enable().\n", __FUNCTION__);
+      fprintf(stderr,
+              "Error: %s() called for a disabled device! Please use: "
+              "wb_gyro_enable().\n",
+              __FUNCTION__);
     result = gyro->velocity;
   } else
     fprintf(stderr, "Error: %s(): invalid device tag.\n", __FUNCTION__);

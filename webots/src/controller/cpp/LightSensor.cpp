@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/light_sensor.h>
 #include <webots/LightSensor.hpp>
+#include <webots/light_sensor.h>
 
 using namespace webots;
 
@@ -22,9 +22,7 @@ void LightSensor::enable(int sampling_period) {
   wb_light_sensor_enable(getTag(), sampling_period);
 }
 
-void LightSensor::disable() {
-  wb_light_sensor_disable(getTag());
-}
+void LightSensor::disable() { wb_light_sensor_disable(getTag()); }
 
 int LightSensor::getSamplingPeriod() const {
   return wb_light_sensor_get_sampling_period(getTag());

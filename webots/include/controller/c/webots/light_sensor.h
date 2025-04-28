@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the LightSensor node          */
+/* Description:  Webots C programming interface for the LightSensor node */
 /**********************************************************************************/
 
 #ifndef WB_LIGHT_SENSOR_H

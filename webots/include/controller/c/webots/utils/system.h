@@ -15,7 +15,8 @@
  */
 
 /************************************************************************************/
-/* Description:  Webots C programming interface for cross-platform system functions */
+/* Description:  Webots C programming interface for cross-platform system
+ * functions */
 /************************************************************************************/
 
 #ifndef WBU_SYSTEM_H
@@ -29,23 +30,25 @@ extern "C" {
 
 // wbu_system_getenv() returns an UTF-8 multi-byte string for the specified
 // environment variable.
-// The return value points to a char buffer which may be overwritten by any subsequent
-// call to a wbu_system function.
+// The return value points to a char buffer which may be overwritten by any
+// subsequent call to a wbu_system function.
 const char *wbu_system_getenv(const char *variable);
 
 // On Linux and macOS, wbu_system_short_path() returns the variable passed as an
-// argument. On Windows, it returns an ASCII string corresponding to the Windows 8.3
-// short path (see GetShortPathName in the Windows API). This is useful when using a
-// library that doesn't support UTF-8 multi-byte strings or wide characters for paths.
-// The return value points to a char buffer which may be overwritten by any subsequent
-// call to a wbu_system function.
+// argument. On Windows, it returns an ASCII string corresponding to the
+// Windows 8.3 short path (see GetShortPathName in the Windows API). This is
+// useful when using a library that doesn't support UTF-8 multi-byte strings or
+// wide characters for paths. The return value points to a char buffer which may
+// be overwritten by any subsequent call to a wbu_system function.
 const char *wbu_system_short_path(const char *path);
 
 // Return the system tmp folder used by Webots, typically /tmp on Linux
 const char *wbu_system_tmpdir();
 
-// The following function returns the folder used by the current instance of Webots. On Linux, it is /tmp/webots-XXX.
-// On macOS is it /var/tmp/webots-XXX. On Windows, it is LOCALAPPDATA/Temp/webots-XXX where XXX is the Webots TCP port
+// The following function returns the folder used by the current instance of
+// Webots. On Linux, it is /tmp/webots-XXX. On macOS is it /var/tmp/webots-XXX.
+// On Windows, it is LOCALAPPDATA/Temp/webots-XXX where XXX is the Webots TCP
+// port
 const char *wbu_system_webots_instance_path(bool refresh);
 
 #ifdef __cplusplus

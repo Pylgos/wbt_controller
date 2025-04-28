@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/compass.h>
 #include <webots/Compass.hpp>
+#include <webots/compass.h>
 
 using namespace webots;
 
@@ -22,9 +22,7 @@ void Compass::enable(int sampling_period) {
   wb_compass_enable(getTag(), sampling_period);
 }
 
-void Compass::disable() {
-  wb_compass_disable(getTag());
-}
+void Compass::disable() { wb_compass_disable(getTag()); }
 
 int Compass::getSamplingPeriod() const {
   return wb_compass_get_sampling_period(getTag());

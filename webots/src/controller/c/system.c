@@ -17,7 +17,7 @@
 #include <assert.h>
 #include <dirent.h>
 #include <stdio.h>
-#include <string.h>  // strlen
+#include <string.h> // strlen
 #include <sys/stat.h>
 
 #include <webots/utils/system.h>
@@ -30,9 +30,7 @@
 #ifdef _WIN32
 static char *buffer = NULL;
 
-static void free_buffer() {
-  free(buffer);
-}
+static void free_buffer() { free(buffer); }
 #endif
 
 const char *wbu_system_getenv(const char *variable) {
@@ -43,7 +41,7 @@ const char *wbu_system_getenv(const char *variable) {
   MultiByteToWideChar(CP_UTF8, 0, variable, -1, wvariable, size);
   size = GetEnvironmentVariableW(wvariable, NULL, 0);
   if (size == 0)
-    return NULL;  // not defined
+    return NULL; // not defined
   value = (wchar_t *)malloc(size * sizeof(wchar_t));
   GetEnvironmentVariableW(wvariable, value, size);
   free(wvariable);
@@ -105,14 +103,15 @@ const char *wbu_system_tmpdir() {
 #ifdef _WIN32
   const char *LOCALAPPDATA = getenv("LOCALAPPDATA");
   assert(LOCALAPPDATA && LOCALAPPDATA[0]);
-  const size_t len = strlen(LOCALAPPDATA) + 6;  // adding "\\Temp"
+  const size_t len = strlen(LOCALAPPDATA) + 6; // adding "\\Temp"
   tmpdir = malloc(len);
   snprintf(tmpdir, len, "%s\\Temp", LOCALAPPDATA);
 #elif defined(__linux__)
   // choose between snap or default tmp path
   const char *WEBOTS_HOME = getenv("WEBOTS_HOME");
   if (WEBOTS_HOME && WEBOTS_HOME[0]) {
-    // if WEBOTS_HOME environment variable contains snap path, use snap tmp folder
+    // if WEBOTS_HOME environment variable contains snap path, use snap tmp
+    // folder
     if (strstr(WEBOTS_HOME, "/snap/webots") != NULL) {
       const char *HOME = getenv("HOME");
       if (HOME && HOME[0]) {

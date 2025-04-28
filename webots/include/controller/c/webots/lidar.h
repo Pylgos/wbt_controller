@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the Lidar node                */
+/* Description:  Webots C programming interface for the Lidar node */
 /**********************************************************************************/
 
 #ifndef WB_LIDAR_H

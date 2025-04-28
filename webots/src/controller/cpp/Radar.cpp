@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/radar.h>
 #include <webots/Radar.hpp>
+#include <webots/radar.h>
 
 using namespace webots;
 
@@ -22,9 +22,7 @@ void Radar::enable(int sampling_period) {
   wb_radar_enable(getTag(), sampling_period);
 }
 
-void Radar::disable() {
-  wb_radar_disable(getTag());
-}
+void Radar::disable() { wb_radar_disable(getTag()); }
 
 int Radar::getSamplingPeriod() const {
   return wb_radar_get_sampling_period(getTag());
@@ -38,13 +36,9 @@ const RadarTarget *Radar::getTargets() const {
   return wb_radar_get_targets(getTag());
 }
 
-double Radar::getMinRange() const {
-  return wb_radar_get_min_range(getTag());
-}
+double Radar::getMinRange() const { return wb_radar_get_min_range(getTag()); }
 
-double Radar::getMaxRange() const {
-  return wb_radar_get_max_range(getTag());
-}
+double Radar::getMaxRange() const { return wb_radar_get_max_range(getTag()); }
 
 double Radar::getHorizontalFov() const {
   return wb_radar_get_horizontal_fov(getTag());

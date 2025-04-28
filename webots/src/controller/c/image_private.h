@@ -36,4 +36,4 @@ void image_cleanup(Image *i);
 void image_setup(Image *i, WbRequest *r);
 void image_get(Image *i);
 
-#endif  // IMAGE_PRIVATE_H
+#endif // IMAGE_PRIVATE_H

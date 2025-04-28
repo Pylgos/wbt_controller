@@ -26,7 +26,8 @@ extern "C" {
 #define WB_STDOUT 1
 #define WB_STDERR 2
 
-// this function is for an internal purpose, please use regular stdout/stderr functions instead
+// this function is for an internal purpose, please use regular stdout/stderr
+// functions instead
 void wb_console_print(const char *text, int stream);
 
 #ifdef __cplusplus

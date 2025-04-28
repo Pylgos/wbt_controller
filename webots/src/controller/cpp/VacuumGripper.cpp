@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/vacuum_gripper.h>
 #include <webots/VacuumGripper.hpp>
+#include <webots/vacuum_gripper.h>
 
 using namespace webots;
 
@@ -34,14 +34,8 @@ bool VacuumGripper::getPresence() const {
   return wb_vacuum_gripper_get_presence(getTag());
 }
 
-bool VacuumGripper::isOn() const {
-  return wb_vacuum_gripper_is_on(getTag());
-}
+bool VacuumGripper::isOn() const { return wb_vacuum_gripper_is_on(getTag()); }
 
-void VacuumGripper::turnOn() {
-  wb_vacuum_gripper_turn_on(getTag());
-}
+void VacuumGripper::turnOn() { wb_vacuum_gripper_turn_on(getTag()); }
 
-void VacuumGripper::turnOff() {
-  wb_vacuum_gripper_turn_off(getTag());
-}
+void VacuumGripper::turnOff() { wb_vacuum_gripper_turn_off(getTag()); }

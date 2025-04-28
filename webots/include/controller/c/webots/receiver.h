@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the Receiver node             */
+/* Description:  Webots C programming interface for the Receiver node */
 /**********************************************************************************/
 
 #ifndef WB_RECEIVER_H

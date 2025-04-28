@@ -17,8 +17,8 @@
 #ifndef DEVICE_PRIVATE_H
 #define DEVICE_PRIVATE_H
 
-#include <webots/nodes.h>
 #include "request.h"
+#include <webots/nodes.h>
 
 #ifndef NAN
 #define NAN (0.0 / 0.0)
@@ -40,4 +40,4 @@ struct _WbDevice {
 void wb_device_cleanup(WbDevice *);
 void wb_device_init(WbDevice *);
 
-#endif  // DEVICE_PRIVATE_H
+#endif // DEVICE_PRIVATE_H

@@ -19,7 +19,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#endif  // _WIN32
+#endif // _WIN32
 #include <stdlib.h>
 #include <webots/types.h>
 
@@ -40,4 +40,4 @@ void tcp_client_close(int fd);
 }
 #endif
 
-#endif  // TCP_CLIENT_H
+#endif // TCP_CLIENT_H

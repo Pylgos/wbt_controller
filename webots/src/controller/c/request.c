@@ -16,12 +16,12 @@
 
 #include "request.h"
 
+#include "scheduler.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>  // strlen, memcpy
+#include <string.h> // strlen, memcpy
 #include <webots/types.h>
-#include "scheduler.h"
 
 WbRequest *request_new_from_data(const void *data, int size) {
   WbRequest *r = malloc(sizeof(WbRequest));
@@ -37,7 +37,7 @@ WbRequest *request_new_empty() {
   WbRequest *r = malloc(sizeof(WbRequest));
   r->data = malloc(REQUEST_REALLOC_SIZE);
   r->size = REQUEST_REALLOC_SIZE;
-  r->pointer = sizeof(int);  // room reserved for the size of the request
+  r->pointer = sizeof(int); // room reserved for the size of the request
   return r;
 }
 
@@ -182,25 +182,17 @@ bool request_is_over(WbRequest *r) {
   return r->pointer == request_get_size(r);
 }
 
-int request_get_size(WbRequest *r) {
-  return *((int *)r->data);
-}
+int request_get_size(WbRequest *r) { return *((int *)r->data); }
 
-int request_get_position(const WbRequest *r) {
-  return r->pointer;
-}
+int request_get_position(const WbRequest *r) { return r->pointer; }
 
-void request_set_position(WbRequest *r, int pos) {
-  r->pointer = pos;
-}
+void request_set_position(WbRequest *r, int pos) { r->pointer = pos; }
 
 void request_set_immediate(WbRequest *r, bool immediate) {
   r->immediate = immediate;
 }
 
-bool request_is_immediate(const WbRequest *r) {
-  return r->immediate;
-}
+bool request_is_immediate(const WbRequest *r) { return r->immediate; }
 
 void request_print(FILE *fd, WbRequest *r) {
   // store and reset position

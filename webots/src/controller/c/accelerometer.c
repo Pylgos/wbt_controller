@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-#include <stdio.h>
-#include <stdlib.h>  // malloc and free
-#include <webots/accelerometer.h>
-#include <webots/nodes.h>
-#include <webots/robot.h>
 #include "device_private.h"
 #include "messages.h"
 #include "robot_private.h"
+#include <stdio.h>
+#include <stdlib.h> // malloc and free
+#include <webots/accelerometer.h>
+#include <webots/nodes.h>
+#include <webots/robot.h>
 
 // Static functions
 
 typedef struct {
-  bool enable;          // need to enable device ?
-  int sampling_period;  // milliseconds
-  double values[3];     // acceleration
+  bool enable;         // need to enable device ?
+  int sampling_period; // milliseconds
+  double values[3];    // acceleration
   int lookup_table_size;
   double *lookup_table;
 } Accelerometer;
@@ -53,24 +53,25 @@ static Accelerometer *accelerometer_get_struct(WbDeviceTag t) {
 static void accelerometer_read_answer(WbDevice *d, WbRequest *r) {
   Accelerometer *acc = d->pdata;
   switch (request_read_uchar(r)) {
-    case C_ACCELEROMETER_DATA:
-      acc->values[0] = request_read_double(r);
-      acc->values[1] = request_read_double(r);
-      acc->values[2] = request_read_double(r);
-      break;
-    case C_CONFIGURE:
-      acc->lookup_table_size = request_read_int32(r);
-      free(acc->lookup_table);
-      acc->lookup_table = NULL;
-      if (acc->lookup_table_size > 0) {
-        acc->lookup_table = (double *)malloc(sizeof(double) * acc->lookup_table_size * 3);
-        for (int i = 0; i < acc->lookup_table_size * 3; i++)
-          acc->lookup_table[i] = request_read_double(r);
-      }
-      break;
-    default:
-      ROBOT_ASSERT(0);  // should never be reached
-      break;
+  case C_ACCELEROMETER_DATA:
+    acc->values[0] = request_read_double(r);
+    acc->values[1] = request_read_double(r);
+    acc->values[2] = request_read_double(r);
+    break;
+  case C_CONFIGURE:
+    acc->lookup_table_size = request_read_int32(r);
+    free(acc->lookup_table);
+    acc->lookup_table = NULL;
+    if (acc->lookup_table_size > 0) {
+      acc->lookup_table =
+          (double *)malloc(sizeof(double) * acc->lookup_table_size * 3);
+      for (int i = 0; i < acc->lookup_table_size * 3; i++)
+        acc->lookup_table[i] = request_read_double(r);
+    }
+    break;
+  default:
+    ROBOT_ASSERT(0); // should never be reached
+    break;
   }
 }
 
@@ -103,7 +104,7 @@ static void accelerometer_write_request(WbDevice *d, WbRequest *r) {
   if (acc->enable) {
     request_write_uchar(r, C_SET_SAMPLING_PERIOD);
     request_write_uint16(r, acc->sampling_period);
-    acc->enable = false;  // done
+    acc->enable = false; // done
   }
 }
 
@@ -143,7 +144,8 @@ void wb_accelerometer_init(WbDevice *d) {
 
 void wb_accelerometer_enable(WbDeviceTag tag, int sampling_period) {
   if (sampling_period < 0) {
-    fprintf(stderr, "Error: %s() called with negative sampling period.\n", __FUNCTION__);
+    fprintf(stderr, "Error: %s() called with negative sampling period.\n",
+            __FUNCTION__);
     return;
   }
 
@@ -183,7 +185,10 @@ const double *wb_accelerometer_get_values(WbDeviceTag tag) {
   const Accelerometer *acc = accelerometer_get_struct(tag);
   if (acc) {
     if (acc->sampling_period == 0)
-      fprintf(stderr, "Error: %s() called for a disabled device! Please use: wb_accelerometer_enable().\n", __FUNCTION__);
+      fprintf(stderr,
+              "Error: %s() called for a disabled device! Please use: "
+              "wb_accelerometer_enable().\n",
+              __FUNCTION__);
     result = acc->values;
   }
   robot_mutex_unlock();

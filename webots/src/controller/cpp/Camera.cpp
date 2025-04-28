@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/camera.h>
 #include <webots/Camera.hpp>
+#include <webots/camera.h>
 
 using namespace std;
 using namespace webots;
@@ -23,9 +23,7 @@ void Camera::enable(int sampling_period) {
   wb_camera_enable(getTag(), sampling_period);
 }
 
-void Camera::disable() {
-  wb_camera_disable(getTag());
-}
+void Camera::disable() { wb_camera_disable(getTag()); }
 
 int Camera::getSamplingPeriod() const {
   return wb_camera_get_sampling_period(getTag());
@@ -35,53 +33,44 @@ const unsigned char *Camera::getImage() const {
   return wb_camera_get_image(getTag());
 }
 
-unsigned char Camera::imageGetRed(const unsigned char *image, int width, int x, int y) {
+unsigned char Camera::imageGetRed(const unsigned char *image, int width, int x,
+                                  int y) {
   return wb_camera_image_get_red(image, width, x, y);
 }
 
-unsigned char Camera::imageGetGreen(const unsigned char *image, int width, int x, int y) {
+unsigned char Camera::imageGetGreen(const unsigned char *image, int width,
+                                    int x, int y) {
   return wb_camera_image_get_green(image, width, x, y);
 }
 
-unsigned char Camera::imageGetBlue(const unsigned char *image, int width, int x, int y) {
+unsigned char Camera::imageGetBlue(const unsigned char *image, int width, int x,
+                                   int y) {
   return wb_camera_image_get_blue(image, width, x, y);
 }
 
-unsigned char Camera::imageGetGray(const unsigned char *image, int width, int x, int y) {
+unsigned char Camera::imageGetGray(const unsigned char *image, int width, int x,
+                                   int y) {
   return wb_camera_image_get_gray(image, width, x, y);
 }
 
-unsigned char Camera::imageGetGrey(const unsigned char *image, int width, int x, int y) {
+unsigned char Camera::imageGetGrey(const unsigned char *image, int width, int x,
+                                   int y) {
   return wb_camera_image_get_grey(image, width, x, y);
 }
 
-int Camera::getWidth() const {
-  return wb_camera_get_width(getTag());
-}
+int Camera::getWidth() const { return wb_camera_get_width(getTag()); }
 
-int Camera::getHeight() const {
-  return wb_camera_get_height(getTag());
-}
+int Camera::getHeight() const { return wb_camera_get_height(getTag()); }
 
-double Camera::getFov() const {
-  return wb_camera_get_fov(getTag());
-}
+double Camera::getFov() const { return wb_camera_get_fov(getTag()); }
 
-double Camera::getMaxFov() const {
-  return wb_camera_get_max_fov(getTag());
-}
+double Camera::getMaxFov() const { return wb_camera_get_max_fov(getTag()); }
 
-double Camera::getMinFov() const {
-  return wb_camera_get_min_fov(getTag());
-}
+double Camera::getMinFov() const { return wb_camera_get_min_fov(getTag()); }
 
-void Camera::setFov(double fov) {
-  wb_camera_set_fov(getTag(), fov);
-}
+void Camera::setFov(double fov) { wb_camera_set_fov(getTag(), fov); }
 
-double Camera::getExposure() const {
-  return wb_camera_get_exposure(getTag());
-}
+double Camera::getExposure() const { return wb_camera_get_exposure(getTag()); }
 
 void Camera::setExposure(double exposure) {
   wb_camera_set_exposure(getTag(), exposure);
@@ -107,9 +96,7 @@ void Camera::setFocalDistance(double focalDistance) {
   wb_camera_set_focal_distance(getTag(), focalDistance);
 }
 
-double Camera::getNear() const {
-  return wb_camera_get_near(getTag());
-}
+double Camera::getNear() const { return wb_camera_get_near(getTag()); }
 
 int Camera::saveImage(const string &filename, int quality) const {
   return wb_camera_save_image(getTag(), filename.c_str(), quality);
@@ -123,9 +110,7 @@ void Camera::recognitionEnable(int samplingPeriod) {
   wb_camera_recognition_enable(getTag(), samplingPeriod);
 }
 
-void Camera::recognitionDisable() {
-  wb_camera_recognition_disable(getTag());
-}
+void Camera::recognitionDisable() { wb_camera_recognition_disable(getTag()); }
 
 int Camera::getRecognitionSamplingPeriod() const {
   return wb_camera_recognition_get_sampling_period(getTag());
@@ -159,6 +144,8 @@ const unsigned char *Camera::getRecognitionSegmentationImage() const {
   return wb_camera_recognition_get_segmentation_image(getTag());
 }
 
-int Camera::saveRecognitionSegmentationImage(const string &filename, int quality) const {
-  return wb_camera_recognition_save_segmentation_image(getTag(), filename.c_str(), quality);
+int Camera::saveRecognitionSegmentationImage(const string &filename,
+                                             int quality) const {
+  return wb_camera_recognition_save_segmentation_image(
+      getTag(), filename.c_str(), quality);
 }

@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/emitter.h>
 #include <webots/Emitter.hpp>
+#include <webots/emitter.h>
 
 using namespace webots;
 
@@ -30,14 +30,8 @@ void Emitter::setChannel(int channel) {
   wb_emitter_set_channel(getTag(), channel);
 }
 
-int Emitter::getChannel() const {
-  return wb_emitter_get_channel(getTag());
-}
+int Emitter::getChannel() const { return wb_emitter_get_channel(getTag()); }
 
-double Emitter::getRange() const {
-  return wb_emitter_get_range(getTag());
-}
+double Emitter::getRange() const { return wb_emitter_get_range(getTag()); }
 
-void Emitter::setRange(double range) {
-  wb_emitter_set_range(getTag(), range);
-}
+void Emitter::setRange(double range) { wb_emitter_set_range(getTag(), range); }

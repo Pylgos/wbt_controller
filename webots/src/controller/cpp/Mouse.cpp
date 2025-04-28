@@ -13,35 +13,23 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/mouse.h>
 #include <webots/Mouse.hpp>
+#include <webots/mouse.h>
 
 using namespace webots;
 
-void Mouse::enable(int sampling_period) {
-  wb_mouse_enable(sampling_period);
-}
+void Mouse::enable(int sampling_period) { wb_mouse_enable(sampling_period); }
 
-void Mouse::disable() {
-  wb_mouse_disable();
-}
+void Mouse::disable() { wb_mouse_disable(); }
 
-int Mouse::getSamplingPeriod() const {
-  return wb_mouse_get_sampling_period();
-}
+int Mouse::getSamplingPeriod() const { return wb_mouse_get_sampling_period(); }
 
-void Mouse::enable3dPosition() {
-  wb_mouse_enable_3d_position();
-}
+void Mouse::enable3dPosition() { wb_mouse_enable_3d_position(); }
 
-void Mouse::disable3dPosition() {
-  wb_mouse_disable_3d_position();
-}
+void Mouse::disable3dPosition() { wb_mouse_disable_3d_position(); }
 
 bool Mouse::is3dPositionEnabled() const {
   return wb_mouse_is_3d_position_enabled();
 }
 
-MouseState Mouse::getState() const {
-  return wb_mouse_get_state();
-}
+MouseState Mouse::getState() const { return wb_mouse_get_state(); }

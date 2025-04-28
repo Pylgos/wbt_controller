@@ -15,8 +15,8 @@
  */
 
 /*
- * Description:   Car library to be used with the 'Car' proto (or any proto inherited by 'Car')
- * Comments:      Sponsored by the CTI project RO2IVSim
+ * Description:   Car library to be used with the 'Car' proto (or any proto
+ * inherited by 'Car') Comments:      Sponsored by the CTI project RO2IVSim
  *                (http://transport.epfl.ch/simulator-for-mobile-robots-and-intelligent-vehicles)
  */
 
@@ -29,7 +29,11 @@
 extern "C" {
 #endif
 
-typedef enum { WBU_CAR_TRACTION = 0, WBU_CAR_PROPULSION = 1, WBU_CAR_FOUR_BY_FOUR = 2 } WbuCarType;
+typedef enum {
+  WBU_CAR_TRACTION = 0,
+  WBU_CAR_PROPULSION = 1,
+  WBU_CAR_FOUR_BY_FOUR = 2
+} WbuCarType;
 
 typedef enum {
   WBU_CAR_COMBUSTION_ENGINE = 0,
@@ -84,4 +88,4 @@ typedef WbuCarWheelIndex wbu_car_wheel_index;
 }
 #endif
 
-#endif  // CAR_H
+#endif // CAR_H

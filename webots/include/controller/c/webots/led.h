@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the LED node                  */
+/* Description:  Webots C programming interface for the LED node */
 /**********************************************************************************/
 
 #ifndef WB_LED_H
@@ -28,7 +28,8 @@
 extern "C" {
 #endif
 
-void wb_led_set(WbDeviceTag tag, int value);  // 0 for off, 1, 2, etc. for on with a color
+void wb_led_set(WbDeviceTag tag,
+                int value); // 0 for off, 1, 2, etc. for on with a color
 int wb_led_get(WbDeviceTag tag);
 
 #ifdef __cplusplus

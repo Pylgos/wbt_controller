@@ -13,15 +13,11 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/led.h>
 #include <webots/LED.hpp>
+#include <webots/led.h>
 
 using namespace webots;
 
-void LED::set(int value) {
-  wb_led_set(getTag(), value);
-}
+void LED::set(int value) { wb_led_set(getTag(), value); }
 
-int LED::get() const {
-  return wb_led_get(getTag());
-}
+int LED::get() const { return wb_led_get(getTag()); }

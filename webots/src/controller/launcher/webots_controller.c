@@ -49,7 +49,8 @@ static char *current_path;
 static int nb_controller_arguments;
 static int next_argument_index;
 
-// Environment variables (putenv() requires the string that is set into the environment to exist)
+// Environment variables (putenv() requires the string that is set into the
+// environment to exist)
 static char *WEBOTS_CONTROLLER_URL;
 static char *new_path;
 static char *new_windows_path;
@@ -71,7 +72,8 @@ static void remove_comment(char *string) {
   }
 }
 
-// Replaces all occurrences of a character in a string with a different character.
+// Replaces all occurrences of a character in a string with a different
+// character.
 static void replace_char(const char *string, char occurrence, char replace) {
   char *current_pos = strchr(string, occurrence);
   while (current_pos) {
@@ -90,7 +92,8 @@ static void remove_char(char *string, char occurrence) {
 }
 
 // Replaces all occurrences of a substring in a string with a different string.
-static void replace_substring(char **string, const char *substring, const char *replace) {
+static void replace_substring(char **string, const char *substring,
+                              const char *replace) {
   char *tmp = *string;
   const size_t substring_size = strlen(substring);
   const size_t replace_size = strlen(replace);
@@ -106,7 +109,8 @@ static void replace_substring(char **string, const char *substring, const char *
   }
 
   // Adapt memory size, only realloc if more memory is needed
-  const size_t new_size = strlen(*string) + substring_count * (replace_size - substring_size) + 1;
+  const size_t new_size =
+      strlen(*string) + substring_count * (replace_size - substring_size) + 1;
   if (new_size > strlen(*string))
     *string = realloc(*string, new_size);
 
@@ -155,10 +159,12 @@ static void get_current_path() {
   }
 }
 
-// Gets and stores the path to the Webots installation folder from the WEBOTS_HOME environment variable.
+// Gets and stores the path to the Webots installation folder from the
+// WEBOTS_HOME environment variable.
 static bool get_webots_home() {
   if (!getenv("WEBOTS_HOME")) {
-    fprintf(stderr, "Set the path to your webots installation folder in WEBOTS_HOME environment variable.\n");
+    fprintf(stderr, "Set the path to your webots installation folder in "
+                    "WEBOTS_HOME environment variable.\n");
     return false;
   } else
     WEBOTS_HOME = malloc(strlen(getenv("WEBOTS_HOME")) + 1);
@@ -166,9 +172,10 @@ static bool get_webots_home() {
   return true;
 }
 
-// Gets and stores the path to the latest installed version of Matlab on the system.
+// Gets and stores the path to the latest installed version of Matlab on the
+// system.
 static bool get_matlab_path() {
-  const struct dirent *directory_entry;  // Pointer for directory entry
+  const struct dirent *directory_entry; // Pointer for directory entry
 
 #ifdef __APPLE__
   const char *matlab_directory = "/Applications/";
@@ -189,10 +196,12 @@ static bool get_matlab_path() {
   DIR *directory = opendir(matlab_directory);
   if (directory == NULL) {
 #ifdef __APPLE__
-    fprintf(stderr, "Could not open Applications folder to search for MATLAB installation. Please specify it manually using "
+    fprintf(stderr, "Could not open Applications folder to search for MATLAB "
+                    "installation. Please specify it manually using "
                     "the option '--matlab-path'.\n");
 #else
-    fprintf(stderr, "No installation of MATLAB found. Please specify it manually using the option '--matlab-path'.\n");
+    fprintf(stderr, "No installation of MATLAB found. Please specify it "
+                    "manually using the option '--matlab-path'.\n");
 #endif
     return false;
   }
@@ -201,7 +210,8 @@ static bool get_matlab_path() {
   char *latest_version = NULL;
   while ((directory_entry = readdir(directory)) != NULL) {
     const size_t directory_name_size = strlen(directory_entry->d_name) + 1;
-    if (strncmp(matlab_version_wc, directory_entry->d_name, strlen(matlab_version_wc)) == 0) {
+    if (strncmp(matlab_version_wc, directory_entry->d_name,
+                strlen(matlab_version_wc)) == 0) {
       if (!latest_version) {
         latest_version = malloc(directory_name_size);
         strncpy(latest_version, directory_entry->d_name, directory_name_size);
@@ -215,44 +225,68 @@ static bool get_matlab_path() {
   }
   closedir(directory);
   if (!latest_version) {
-    fprintf(stderr, "No installation of MATLAB found. Please specify it manually using the option '--matlab-path'.\n");
+    fprintf(stderr, "No installation of MATLAB found. Please specify it "
+                    "manually using the option '--matlab-path'.\n");
     return false;
   }
 
-  const size_t matlab_path_size = snprintf(NULL, 0, "%s%s%s", matlab_directory, latest_version, matlab_exec_suffix) + 1;
+  const size_t matlab_path_size = snprintf(NULL, 0, "%s%s%s", matlab_directory,
+                                           latest_version, matlab_exec_suffix) +
+                                  1;
   matlab_path = malloc(matlab_path_size);
-  sprintf(matlab_path, "%s%s%s", matlab_directory, latest_version, matlab_exec_suffix);
+  sprintf(matlab_path, "%s%s%s", matlab_directory, latest_version,
+          matlab_exec_suffix);
   printf("Using the latest available MATLAB instance: %s\n", matlab_path);
 
   free(latest_version);
   return true;
 }
 
-// Prints the command line options and their descriptions for the Webots controller launcher.
+// Prints the command line options and their descriptions for the Webots
+// controller launcher.
 static void print_options() {
-  printf(
-    "Usage: webots-controller [options] [controller_file] [controller_args]\n\nOptions:\n\n  --help\n    Display this help "
-    "message and exit.\n\n  --protocol=<ipc|tcp>\n    Define the protocol to use to communicate between the controller and "
-    "Webots.\n    'ipc' is used by default. 'ipc' should be used when Webots is\n    running on the same machine as the extern "
-    "controller.\n    'tcp' should be used when connecting to a remote instance of Webots.\n\n  --ip-address=<ip-address>\n    "
-    "The IP address of the remote machine on which the Webots instance is running.\n    This option should only be used with "
-    "the `tcp` protocol\n    (i.e. remote controllers).\n\n  --port=<port>\n    Define the port to which the controller should "
-    "connect.\n    1234 is used by default, as it is the default port for Webots.\n    This setting allows you to connect to a "
-    "specific instance of Webots if\n    there are multiple instances running on the target machine.\n    The port of a Webots "
-    "instance can be set at its launch.\n\n  --robot-name=<robot-name>\n    Target a specific robot by specifying its name in "
-    "case multiple robots wait\n    for an extern controller in the Webots instance.\n\n  --interactive\n    Launch MATLAB "
-    "in interactive debugging mode.\n    See https://cyberbotics.com/doc/guide/matlab#using-the-matlab-desktop for\n    more "
-    "information.\n\n  --matlab-path=<matlab-path>\n    For MATLAB controllers, this option allows to specify the path to the "
-    "\n    executable of a specific MATLAB version.\n    By default, the launcher checks in the default MATLAB installation "
-    "folder.\n    See https://cyberbotics.com/doc/guide/running-extern-robot-controllers#running-a-matlab-extern-controller\n"
-    "    for more information.\n\n  --stdout-redirect\n    Redirect the stdout of the controller to the Webots console.\n\n  "
-    "--stderr-redirect\n    Redirect the stderr of the controller to the Webots console.\n\n");
+  printf("Usage: webots-controller [options] [controller_file] "
+         "[controller_args]\n\nOptions:\n\n  --help\n    Display this help "
+         "message and exit.\n\n  --protocol=<ipc|tcp>\n    Define the protocol "
+         "to use to communicate between the controller and "
+         "Webots.\n    'ipc' is used by default. 'ipc' should be used when "
+         "Webots is\n    running on the same machine as the extern "
+         "controller.\n    'tcp' should be used when connecting to a remote "
+         "instance of Webots.\n\n  --ip-address=<ip-address>\n    "
+         "The IP address of the remote machine on which the Webots instance is "
+         "running.\n    This option should only be used with "
+         "the `tcp` protocol\n    (i.e. remote controllers).\n\n  "
+         "--port=<port>\n    Define the port to which the controller should "
+         "connect.\n    1234 is used by default, as it is the default port for "
+         "Webots.\n    This setting allows you to connect to a "
+         "specific instance of Webots if\n    there are multiple instances "
+         "running on the target machine.\n    The port of a Webots "
+         "instance can be set at its launch.\n\n  --robot-name=<robot-name>\n  "
+         "  Target a specific robot by specifying its name in "
+         "case multiple robots wait\n    for an extern controller in the "
+         "Webots instance.\n\n  --interactive\n    Launch MATLAB "
+         "in interactive debugging mode.\n    See "
+         "https://cyberbotics.com/doc/guide/matlab#using-the-matlab-desktop "
+         "for\n    more "
+         "information.\n\n  --matlab-path=<matlab-path>\n    For MATLAB "
+         "controllers, this option allows to specify the path to the "
+         "\n    executable of a specific MATLAB version.\n    By default, the "
+         "launcher checks in the default MATLAB installation "
+         "folder.\n    See "
+         "https://cyberbotics.com/doc/guide/"
+         "running-extern-robot-controllers#running-a-matlab-extern-controller\n"
+         "    for more information.\n\n  --stdout-redirect\n    Redirect the "
+         "stdout of the controller to the Webots console.\n\n  "
+         "--stderr-redirect\n    Redirect the stderr of the controller to the "
+         "Webots console.\n\n");
 }
 
-// Parses the command line options for the Webots controller launcher and sets WEBOTS_CONTROLLER_URL envrionment variable.
+// Parses the command line options for the Webots controller launcher and sets
+// WEBOTS_CONTROLLER_URL envrionment variable.
 static bool parse_options(int nb_arguments, char **arguments) {
   if (nb_arguments == 1) {
-    fprintf(stderr, "No controller file provided. Please provide an existing controller file as an argument.\n");
+    fprintf(stderr, "No controller file provided. Please provide an existing "
+                    "controller file as an argument.\n");
     return false;
   }
 
@@ -302,7 +336,8 @@ static bool parse_options(int nb_arguments, char **arguments) {
         print_options();
         return false;
       } else {
-        printf("Invalid option '%s'. Try '--help' for more information.\n", arguments[i]);
+        printf("Invalid option '%s'. Try '--help' for more information.\n",
+               arguments[i]);
         return false;
       }
     } else {
@@ -319,7 +354,8 @@ static bool parse_options(int nb_arguments, char **arguments) {
 
   // Check that a controller path has been provided
   if (!controller) {
-    fprintf(stderr, "No controller file provided. Please provide an existing controller file as argument.\n");
+    fprintf(stderr, "No controller file provided. Please provide an existing "
+                    "controller file as argument.\n");
     return false;
   }
 
@@ -336,23 +372,28 @@ static bool parse_options(int nb_arguments, char **arguments) {
   const char *robot_name_string = robot_name ? robot_name : "";
   if (strncmp(protocol, "tcp", 3) == 0) {
     if (!ip_address) {
-      fprintf(stderr, "Specify the IP address of the Webots machine to connect to with '--ip-address=' option.\n");
+      fprintf(stderr, "Specify the IP address of the Webots machine to connect "
+                      "to with '--ip-address=' option.\n");
       return false;
     }
-    const size_t WEBOTS_CONTROLLER_URL_size = snprintf(NULL, 0, "WEBOTS_CONTROLLER_URL=%s://%s:%s%s%s", protocol, ip_address,
-                                                       port, robot_separator, robot_name_string) +
-                                              1;
+    const size_t WEBOTS_CONTROLLER_URL_size =
+        snprintf(NULL, 0, "WEBOTS_CONTROLLER_URL=%s://%s:%s%s%s", protocol,
+                 ip_address, port, robot_separator, robot_name_string) +
+        1;
     WEBOTS_CONTROLLER_URL = malloc(WEBOTS_CONTROLLER_URL_size);
-    sprintf(WEBOTS_CONTROLLER_URL, "WEBOTS_CONTROLLER_URL=%s://%s:%s%s%s", protocol, ip_address, port, robot_separator,
-            robot_name_string);
+    sprintf(WEBOTS_CONTROLLER_URL, "WEBOTS_CONTROLLER_URL=%s://%s:%s%s%s",
+            protocol, ip_address, port, robot_separator, robot_name_string);
   } else if (strncmp(protocol, "ipc", 3) == 0) {
     if (ip_address)
       fprintf(stderr, "Skipping IP address for ipc protocol.\n");
 
     const size_t WEBOTS_CONTROLLER_URL_size =
-      snprintf(NULL, 0, "WEBOTS_CONTROLLER_URL=%s://%s%s%s", protocol, port, robot_separator, robot_name_string) + 1;
+        snprintf(NULL, 0, "WEBOTS_CONTROLLER_URL=%s://%s%s%s", protocol, port,
+                 robot_separator, robot_name_string) +
+        1;
     WEBOTS_CONTROLLER_URL = malloc(WEBOTS_CONTROLLER_URL_size);
-    sprintf(WEBOTS_CONTROLLER_URL, "WEBOTS_CONTROLLER_URL=%s://%s%s%s", protocol, port, robot_separator, robot_name_string);
+    sprintf(WEBOTS_CONTROLLER_URL, "WEBOTS_CONTROLLER_URL=%s://%s%s%s",
+            protocol, port, robot_separator, robot_name_string);
   } else {
     fprintf(stderr, "Only ipc and tcp protocols are supported.\n");
     return false;
@@ -361,12 +402,16 @@ static bool parse_options(int nb_arguments, char **arguments) {
 
   // Show resulting target options to user
   const char *location = strncmp(protocol, "tcp", 3) == 0 ? "remote" : "local";
-  printf("\nThe started controller targets a %s instance (%s protocol) of Webots with port number %s.", location, protocol,
-         port);
-  strncmp(protocol, "tcp", 3) == 0 ? printf(" The IP address of the remote Webots instance is '%s'.\n", ip_address) :
-                                     printf("\n");
-  robot_name ? printf("Targeting robot '%s'.\n", robot_name) :
-               printf("Targeting the only robot waiting for an extern controller.\n");
+  printf("\nThe started controller targets a %s instance (%s protocol) of "
+         "Webots with port number %s.",
+         location, protocol, port);
+  strncmp(protocol, "tcp", 3) == 0
+      ? printf(" The IP address of the remote Webots instance is '%s'.\n",
+               ip_address)
+      : printf("\n");
+  robot_name
+      ? printf("Targeting robot '%s'.\n", robot_name)
+      : printf("Targeting the only robot waiting for an extern controller.\n");
 
   free(protocol);
   free(ip_address);
@@ -376,8 +421,10 @@ static bool parse_options(int nb_arguments, char **arguments) {
 }
 
 /*
-This function includes the controller library directory in the relevant OS-specific environment variable:
-- For Windows it adds "WEBOTS_HOME\lib\controller;" to the Path environment variable.
+This function includes the controller library directory in the relevant
+OS-specific environment variable:
+- For Windows it adds "WEBOTS_HOME\lib\controller;" to the Path environment
+variable.
 - For Linux, it adds "WEBOTS_HOME/lib/controller:" to LD_LIBRARY_PATH.
 - For macOS it adds "WEBOTS_HOME/Contents/lib/controller:" to DYLD_LIBRARY_PATH.
 */
@@ -393,28 +440,37 @@ static void add_lib_controller_to_path() {
   const char *path_env_variable = "DYLD_LIBRARY_PATH";
 #endif
   const size_t new_path_size =
-    snprintf(NULL, 0, "%s=%s%s%s", path_env_variable, WEBOTS_HOME, lib_controller, getenv(path_env_variable)) + 1;
+      snprintf(NULL, 0, "%s=%s%s%s", path_env_variable, WEBOTS_HOME,
+               lib_controller, getenv(path_env_variable)) +
+      1;
   new_path = malloc(new_path_size);
-  sprintf(new_path, "%s=%s%s%s", path_env_variable, WEBOTS_HOME, lib_controller, getenv(path_env_variable));
+  sprintf(new_path, "%s=%s%s%s", path_env_variable, WEBOTS_HOME, lib_controller,
+          getenv(path_env_variable));
   putenv(new_path);
 }
 
 /*
-This function sets the environment variable for java and executable controllers execution.
+This function sets the environment variable for java and executable controllers
+execution.
 
-On Windows, the function adds a new path to the "Path" environment variable by concatenating the WEBOTS_HOME constant, the
-'msys64\mingw64\bin' and 'msys64\mingw64\bin\cpp' directories to the current "Path" value.
+On Windows, the function adds a new path to the "Path" environment variable by
+concatenating the WEBOTS_HOME constant, the 'msys64\mingw64\bin' and
+'msys64\mingw64\bin\cpp' directories to the current "Path" value.
 
-The function also adds the controller library directory to the Path on all platforms.
+The function also adds the controller library directory to the Path on all
+platforms.
 */
 static void exec_java_config_environment() {
 #ifdef _WIN32
-  const size_t new_windows_path_size = snprintf(NULL, 0, "Path=%s\\msys64\\mingw64\\bin;%s\\msys64\\mingw64\\bin\\cpp;%s",
-                                                WEBOTS_HOME, WEBOTS_HOME, getenv("Path")) +
-                                       1;
+  const size_t new_windows_path_size =
+      snprintf(NULL, 0,
+               "Path=%s\\msys64\\mingw64\\bin;%s\\msys64\\mingw64\\bin\\cpp;%s",
+               WEBOTS_HOME, WEBOTS_HOME, getenv("Path")) +
+      1;
   new_windows_path = malloc(new_windows_path_size);
-  sprintf(new_windows_path, "Path=%s\\msys64\\mingw64\\bin;%s\\msys64\\mingw64\\bin\\cpp;%s", WEBOTS_HOME, WEBOTS_HOME,
-          getenv("Path"));
+  sprintf(new_windows_path,
+          "Path=%s\\msys64\\mingw64\\bin;%s\\msys64\\mingw64\\bin\\cpp;%s",
+          WEBOTS_HOME, WEBOTS_HOME, getenv("Path"));
   putenv(new_windows_path);
 #endif
   add_lib_controller_to_path();
@@ -423,9 +479,12 @@ static void exec_java_config_environment() {
 /*
 This function sets the environment variable for python controllers execution.
 
-For Windows it adds "\lib\controller\python;" to PYTHONPATH and adds "\msys64\mingw64\bin\cpp;" to the Path environment
-variable. For Linux, it adds "/lib/controller/python:" to PYTHONPATH. For macOS it adds "/Contents/lib/controller/python:" to
-PYTHONPATH and adds "/Contents/lib/controller:" to DYLD_LIBRARY_PATH. It sets PYTHONIOENCODING to "UTF-8" on all platforms.
+For Windows it adds "\lib\controller\python;" to PYTHONPATH and adds
+"\msys64\mingw64\bin\cpp;" to the Path environment variable. For Linux, it adds
+"/lib/controller/python:" to PYTHONPATH. For macOS it adds
+"/Contents/lib/controller/python:" to PYTHONPATH and adds
+"/Contents/lib/controller:" to DYLD_LIBRARY_PATH. It sets PYTHONIOENCODING to
+"UTF-8" on all platforms.
 */
 static void python_config_environment() {
 #ifdef _WIN32
@@ -436,26 +495,37 @@ static void python_config_environment() {
   const char *python_lib_controller = "/Contents/lib/controller/python:";
 #endif
   const size_t new_python_path_size =
-    snprintf(NULL, 0, "PYTHONPATH=%s%s%s", WEBOTS_HOME, python_lib_controller, getenv("PYTHONPATH")) + 1;
+      snprintf(NULL, 0, "PYTHONPATH=%s%s%s", WEBOTS_HOME, python_lib_controller,
+               getenv("PYTHONPATH")) +
+      1;
   new_python_path = malloc(new_python_path_size);
-  sprintf(new_python_path, "PYTHONPATH=%s%s%s", WEBOTS_HOME, python_lib_controller, getenv("PYTHONPATH"));
+  sprintf(new_python_path, "PYTHONPATH=%s%s%s", WEBOTS_HOME,
+          python_lib_controller, getenv("PYTHONPATH"));
   putenv(new_python_path);
 
   char *python_ioencoding = "PYTHONIOENCODING=UTF-8";
   putenv(python_ioencoding);
 
-// On Windows add libCppController to Path (useful for C++ controllers, robot windows and remote control plugins)
-// On macOS add libController to DYLD_LIBRARY_PATH (useful for generic robot window library)
+// On Windows add libCppController to Path (useful for C++ controllers, robot
+// windows and remote control plugins) On macOS add libController to
+// DYLD_LIBRARY_PATH (useful for generic robot window library)
 #ifdef _WIN32
-  const size_t new_path_size = snprintf(NULL, 0, "Path=%s\\msys64\\mingw64\\bin\\cpp;%s", WEBOTS_HOME, getenv("Path")) + 1;
+  const size_t new_path_size =
+      snprintf(NULL, 0, "Path=%s\\msys64\\mingw64\\bin\\cpp;%s", WEBOTS_HOME,
+               getenv("Path")) +
+      1;
   new_path = malloc(new_path_size);
-  sprintf(new_path, "Path=%s\\msys64\\mingw64\\bin\\cpp;%s", WEBOTS_HOME, getenv("Path"));
+  sprintf(new_path, "Path=%s\\msys64\\mingw64\\bin\\cpp;%s", WEBOTS_HOME,
+          getenv("Path"));
   putenv(new_path);
 #elif defined __APPLE__
   const size_t new_path_size =
-    snprintf(NULL, 0, "DYLD_LIBRARY_PATH=%s/Contents/lib/controller:%s", WEBOTS_HOME, getenv("DYLD_LIBRARY_PATH")) + 1;
+      snprintf(NULL, 0, "DYLD_LIBRARY_PATH=%s/Contents/lib/controller:%s",
+               WEBOTS_HOME, getenv("DYLD_LIBRARY_PATH")) +
+      1;
   new_path = malloc(new_path_size);
-  sprintf(new_path, "DYLD_LIBRARY_PATH=%s/Contents/lib/controller:%s", WEBOTS_HOME, getenv("DYLD_LIBRARY_PATH"));
+  sprintf(new_path, "DYLD_LIBRARY_PATH=%s/Contents/lib/controller:%s",
+          WEBOTS_HOME, getenv("DYLD_LIBRARY_PATH"));
   putenv(new_path);
 #endif
 }
@@ -464,24 +534,28 @@ static void python_config_environment() {
 This function sets the environment variable for MATLAB controllers execution.
 
 - It sets WEBOTS_PROJECT environment variable to the path of the project folder.
-- It sets WEBOTS_CONTROLLER_NAME environment variable to the name of the controller.
-- It sets WEBOTS_CONTROLLER_ARGS environment variable to contain a list of all controller arguments.
-- It determines the Webots version from version.txt file contained in the Webots installation, and sets
-  WEBOTS_VERSION environment variable to this version.
+- It sets WEBOTS_CONTROLLER_NAME environment variable to the name of the
+controller.
+- It sets WEBOTS_CONTROLLER_ARGS environment variable to contain a list of all
+controller arguments.
+- It determines the Webots version from version.txt file contained in the Webots
+installation, and sets WEBOTS_VERSION environment variable to this version.
 
 The function also adds the controller library directory to the Path.
 */
 static void matlab_config_environment() {
   // Add project folder to WEBOTS_PROJECT env variable
   get_current_path();
-  const size_t controller_folder_size = strlen(strstr(current_path, "controllers")) + 1;
+  const size_t controller_folder_size =
+      strlen(strstr(current_path, "controllers")) + 1;
   const size_t controller_size = strlen(current_path);
   const size_t project_path_size = controller_size - controller_folder_size;
   char *project_path = malloc(project_path_size + 1);
   strncpy(project_path, current_path, project_path_size);
   project_path[project_path_size] = '\0';
 
-  const size_t webots_project_size = snprintf(NULL, 0, "WEBOTS_PROJECT=%s", project_path) + 1;
+  const size_t webots_project_size =
+      snprintf(NULL, 0, "WEBOTS_PROJECT=%s", project_path) + 1;
   webots_project = malloc(webots_project_size);
   sprintf(webots_project, "WEBOTS_PROJECT=%s", project_path);
   putenv(webots_project);
@@ -489,13 +563,16 @@ static void matlab_config_environment() {
 
   // Add controller name to WEBOTS_CONTROLLER_NAME env variable
   char *controller_name = strrchr(controller, PATH_SEPARATOR[0]) + 1;
-  const size_t webots_controller_name_size = snprintf(NULL, 0, "WEBOTS_CONTROLLER_NAME=%s", controller_name) + 1;
+  const size_t webots_controller_name_size =
+      snprintf(NULL, 0, "WEBOTS_CONTROLLER_NAME=%s", controller_name) + 1;
   webots_controller_name = malloc(webots_controller_name_size);
-  controller_name[strlen(controller_name) - strlen(controller_extension)] = '\0';
+  controller_name[strlen(controller_name) - strlen(controller_extension)] =
+      '\0';
   sprintf(webots_controller_name, "WEBOTS_CONTROLLER_NAME=%s", controller_name);
   putenv(webots_controller_name);
 
-  // Get Webots version (in txt file) and put it in WEBOTS_VERSION environment variable
+  // Get Webots version (in txt file) and put it in WEBOTS_VERSION environment
+  // variable
 #ifdef _WIN32
   const char *version_txt_path = "\\resources\\version.txt";
 #elif defined __linux__
@@ -503,21 +580,24 @@ static void matlab_config_environment() {
 #elif defined __APPLE__
   const char *version_txt_path = "/Contents/Resources/version.txt";
 #endif
-  const size_t version_file_name_size = snprintf(NULL, 0, "%s%s", WEBOTS_HOME, version_txt_path) + 1;
+  const size_t version_file_name_size =
+      snprintf(NULL, 0, "%s%s", WEBOTS_HOME, version_txt_path) + 1;
   char *version_file_name = malloc(version_file_name_size);
   sprintf(version_file_name, "%s%s", WEBOTS_HOME, version_txt_path);
 
   FILE *version_file;
   if ((version_file = fopen(version_file_name, "r")) == NULL) {
-    printf("Webots version could not be determined. '%s' can not be opened.\n", version_file_name);
+    printf("Webots version could not be determined. '%s' can not be opened.\n",
+           version_file_name);
     exit(1);
   }
-  char version[16];  // RXXXXx-revisionX
+  char version[16]; // RXXXXx-revisionX
   fscanf(version_file, "%15[^\n]", version);
   fclose(version_file);
   free(version_file_name);
 
-  const size_t webots_version_size = snprintf(NULL, 0, "WEBOTS_VERSION=%s", version) + 1;
+  const size_t webots_version_size =
+      snprintf(NULL, 0, "WEBOTS_VERSION=%s", version) + 1;
   webots_version = malloc(webots_version_size);
   sprintf(webots_version, "WEBOTS_VERSION=%s", version);
   putenv(webots_version);
@@ -526,7 +606,8 @@ static void matlab_config_environment() {
   add_lib_controller_to_path();
 }
 
-// Replace all environment variables in the string ('$(ENV)' syntax) by its content
+// Replace all environment variables in the string ('$(ENV)' syntax) by its
+// content
 static void parse_environment_variables(char **string) {
   char *tmp = *string;
   while ((tmp = strstr(tmp, "$("))) {
@@ -552,13 +633,15 @@ static void parse_environment_variables(char **string) {
   }
 }
 
-// Convert relative paths to absolute paths and replaces environment variables with their content in the ini file
+// Convert relative paths to absolute paths and replaces environment variables
+// with their content in the ini file
 static void format_ini_paths(char **string) {
   // Compute absolute path to ini file
   get_current_path();
   char *absolute_controller_path = NULL;
   size_t absolute_controller_path_size = 0;
-  absolute_controller_path_size = snprintf(NULL, 0, "%s%s", current_path, controller_path) + 1;
+  absolute_controller_path_size =
+      snprintf(NULL, 0, "%s%s", current_path, controller_path) + 1;
   absolute_controller_path = malloc(absolute_controller_path_size);
   sprintf(absolute_controller_path, "%s%s", current_path, controller_path);
 
@@ -585,7 +668,8 @@ static void format_ini_paths(char **string) {
 // Read and apply the runtime.ini file line by line
 static void parse_runtime_ini() {
   // Open runtime.ini if it exists
-  const size_t ini_file_name_size = snprintf(NULL, 0, "%sruntime.ini", controller_path) + 1;
+  const size_t ini_file_name_size =
+      snprintf(NULL, 0, "%sruntime.ini", controller_path) + 1;
   char *ini_file_name = malloc(ini_file_name_size);
   sprintf(ini_file_name, "%sruntime.ini", controller_path);
   FILE *runtime_ini;
@@ -601,9 +685,9 @@ static void parse_runtime_ini() {
   while (fgets(line_buffer, MAX_LINE_BUFFER_SIZE, runtime_ini)) {
     char *runtime_ini_line = malloc(strlen(line_buffer) + 1);
     strcpy(runtime_ini_line, line_buffer);
-    remove_char(runtime_ini_line, ' ');   // remove useless spaces
-    remove_char(runtime_ini_line, '\n');  // remove useless end-of-lines
-    remove_char(runtime_ini_line, '\r');  // remove useless end-of-lines
+    remove_char(runtime_ini_line, ' ');  // remove useless spaces
+    remove_char(runtime_ini_line, '\n'); // remove useless end-of-lines
+    remove_char(runtime_ini_line, '\r'); // remove useless end-of-lines
 
     // Ignore empty lines
     if (!strlen(runtime_ini_line)) {
@@ -617,16 +701,21 @@ static void parse_runtime_ini() {
         section = Path;
       else if (strncmp(runtime_ini_line, "[environmentvariables]", 22) == 0)
         section = Simple;
-      else if (strncmp(runtime_ini_line, "[environmentvariablesforWindows]", 32) == 0)
+      else if (strncmp(runtime_ini_line, "[environmentvariablesforWindows]",
+                       32) == 0)
         section = Windows;
-      else if (strncmp(runtime_ini_line, "[environmentvariablesformacOS]", 30) == 0)
+      else if (strncmp(runtime_ini_line, "[environmentvariablesformacOS]",
+                       30) == 0)
         section = macOS;
-      else if (strncmp(runtime_ini_line, "[environmentvariablesforLinux]", 30) == 0)
+      else if (strncmp(runtime_ini_line, "[environmentvariablesforLinux]",
+                       30) == 0)
         section = Linux;
       else {
         fprintf(stderr,
                 "Unknown section in the runtime.ini file. Please refer to "
-                "https://cyberbotics.com/doc/guide/controller-programming#environment-variables for more information.\n");
+                "https://cyberbotics.com/doc/guide/"
+                "controller-programming#environment-variables for more "
+                "information.\n");
         exit(1);
       }
     }
@@ -639,53 +728,54 @@ static void parse_runtime_ini() {
     else {
       char *new_env_ptr;
       switch (section) {
-        case Path:
-          remove_comment(runtime_ini_line);
+      case Path:
+        remove_comment(runtime_ini_line);
 #ifdef _WIN32
-          // replace ':' and '/' by Windows equivalents
-          replace_char(runtime_ini_line, '/', '\\');
-          replace_char(runtime_ini_line, ':', ';');
+        // replace ':' and '/' by Windows equivalents
+        replace_char(runtime_ini_line, '/', '\\');
+        replace_char(runtime_ini_line, ':', ';');
 #endif
-          format_ini_paths(&runtime_ini_line);
-          new_env_ptr = strdup(runtime_ini_line);
-          putenv(new_env_ptr);
-          break;
-        case Simple:
-          remove_comment(runtime_ini_line);
-          new_env_ptr = strdup(runtime_ini_line);
-          putenv(new_env_ptr);
-          break;
-        case Windows:
+        format_ini_paths(&runtime_ini_line);
+        new_env_ptr = strdup(runtime_ini_line);
+        putenv(new_env_ptr);
+        break;
+      case Simple:
+        remove_comment(runtime_ini_line);
+        new_env_ptr = strdup(runtime_ini_line);
+        putenv(new_env_ptr);
+        break;
+      case Windows:
 #ifdef _WIN32
-          if (!strchr(runtime_ini_line, '\"')) {
-            fprintf(stderr, "Windows paths should be written between double-quotes symbols \".\n");
-            exit(1);
-          }
-          remove_comment(strrchr(runtime_ini_line, '\"'));
-          remove_char(runtime_ini_line, '"');
-          format_ini_paths(&runtime_ini_line);
-          new_env_ptr = strdup(runtime_ini_line);
-          putenv(new_env_ptr);
+        if (!strchr(runtime_ini_line, '\"')) {
+          fprintf(stderr, "Windows paths should be written between "
+                          "double-quotes symbols \".\n");
+          exit(1);
+        }
+        remove_comment(strrchr(runtime_ini_line, '\"'));
+        remove_char(runtime_ini_line, '"');
+        format_ini_paths(&runtime_ini_line);
+        new_env_ptr = strdup(runtime_ini_line);
+        putenv(new_env_ptr);
 #endif
-          break;
-        case macOS:
+        break;
+      case macOS:
 #ifdef __APPLE__
-          remove_comment(runtime_ini_line);
-          format_ini_paths(&runtime_ini_line);
-          new_env_ptr = strdup(runtime_ini_line);
-          putenv(new_env_ptr);
+        remove_comment(runtime_ini_line);
+        format_ini_paths(&runtime_ini_line);
+        new_env_ptr = strdup(runtime_ini_line);
+        putenv(new_env_ptr);
 #endif
-          break;
-        case Linux:
+        break;
+      case Linux:
 #ifdef __linux__
-          remove_comment(runtime_ini_line);
-          format_ini_paths(&runtime_ini_line);
-          new_env_ptr = strdup(runtime_ini_line);
-          putenv(new_env_ptr);
+        remove_comment(runtime_ini_line);
+        format_ini_paths(&runtime_ini_line);
+        new_env_ptr = strdup(runtime_ini_line);
+        putenv(new_env_ptr);
 #endif
-          break;
-        default:
-          break;
+        break;
+      default:
+        break;
       }
     }
     free(runtime_ini_line);
@@ -695,7 +785,8 @@ static void parse_runtime_ini() {
 }
 
 // Add a single string argument to the argument 'argv' array
-static char **add_single_argument(char **argv, size_t *current_size, const char *str) {
+static char **add_single_argument(char **argv, size_t *current_size,
+                                  const char *str) {
   (*current_size)++;
   argv = realloc(argv, *current_size * sizeof(char *));
   if (!argv)
@@ -706,29 +797,39 @@ static char **add_single_argument(char **argv, size_t *current_size, const char 
 
 // Add all controller arguments (given to the launcher) to the 'argv' array
 // For MATLAB, append them to WEBOTS_CONTROLLER_ARGS instead
-static char **add_controller_arguments(char **argv, char **controller_argv, size_t *current_size, bool is_matlab) {
+static char **add_controller_arguments(char **argv, char **controller_argv,
+                                       size_t *current_size, bool is_matlab) {
   size_t webots_controller_args_size;
   if (is_matlab) {
-    webots_controller_args_size = snprintf(NULL, 0, "WEBOTS_CONTROLLER_ARGS=%s", controller_argv[next_argument_index]) + 1;
+    webots_controller_args_size =
+        snprintf(NULL, 0, "WEBOTS_CONTROLLER_ARGS=%s",
+                 controller_argv[next_argument_index]) +
+        1;
     webots_controller_args = malloc(webots_controller_args_size);
-    snprintf(webots_controller_args, webots_controller_args_size, "WEBOTS_CONTROLLER_ARGS=%s",
-             controller_argv[next_argument_index]);
+    snprintf(webots_controller_args, webots_controller_args_size,
+             "WEBOTS_CONTROLLER_ARGS=%s", controller_argv[next_argument_index]);
     nb_controller_arguments--;
     next_argument_index++;
   }
   while (nb_controller_arguments) {
     if (is_matlab) {
-      size_t varargin_size = snprintf(NULL, 0, "%s%s", ENV_SEPARATOR, controller_argv[next_argument_index]) + 1;
+      size_t varargin_size = snprintf(NULL, 0, "%s%s", ENV_SEPARATOR,
+                                      controller_argv[next_argument_index]) +
+                             1;
       char *varargin = malloc(varargin_size);
-      snprintf(varargin, varargin_size, "%s%s", ENV_SEPARATOR, controller_argv[next_argument_index]);
-      webots_controller_args = realloc(webots_controller_args, webots_controller_args_size + varargin_size);
+      snprintf(varargin, varargin_size, "%s%s", ENV_SEPARATOR,
+               controller_argv[next_argument_index]);
+      webots_controller_args = realloc(
+          webots_controller_args, webots_controller_args_size + varargin_size);
       if (!webots_controller_args)
         exit(1);
-      snprintf(webots_controller_args + webots_controller_args_size - 1, varargin_size, "%s", varargin);
+      snprintf(webots_controller_args + webots_controller_args_size - 1,
+               varargin_size, "%s", varargin);
       webots_controller_args_size += (varargin_size - 1);
       free(varargin);
     } else
-      argv = add_single_argument(argv, current_size, controller_argv[next_argument_index]);
+      argv = add_single_argument(argv, current_size,
+                                 controller_argv[next_argument_index]);
     nb_controller_arguments--;
     next_argument_index++;
   }
@@ -769,17 +870,20 @@ int main(int argc, char **argv) {
   replace_char(controller, '/', '\\');
 #endif
 
-  // ROS 2 controller doesn't refer to a file but on the webots_ros2_driver package
+  // ROS 2 controller doesn't refer to a file but on the webots_ros2_driver
+  // package
   if (strcmp(controller, "ros2") == 0) {
     // Add the controller library to the Path.
-    // Note: PYTHONPATH environment variable doesn't need to be set because it is already configured to point to the Python
-    // installation folder of the lib controller when the ROS 2 package is sourced.
+    // Note: PYTHONPATH environment variable doesn't need to be set because it
+    // is already configured to point to the Python installation folder of the
+    // lib controller when the ROS 2 package is sourced.
     add_lib_controller_to_path();
     size_t current_size = 0;
     char **new_argv = NULL;
     new_argv = add_single_argument(new_argv, &current_size, "ros2");
     new_argv = add_single_argument(new_argv, &current_size, "run");
-    new_argv = add_single_argument(new_argv, &current_size, "webots_ros2_driver");
+    new_argv =
+        add_single_argument(new_argv, &current_size, "webots_ros2_driver");
     new_argv = add_single_argument(new_argv, &current_size, "driver");
     new_argv = add_controller_arguments(new_argv, argv, &current_size, false);
     new_argv = add_single_argument(new_argv, &current_size, NULL);
@@ -795,7 +899,10 @@ int main(int argc, char **argv) {
 
   // Check if controller file exists
   if (access(controller, F_OK) != 0) {
-    fprintf(stderr, "Controller file '%s' not found. Please specify a path to an existing controller file.\n", controller);
+    fprintf(stderr,
+            "Controller file '%s' not found. Please specify a path to an "
+            "existing controller file.\n",
+            controller);
     exit(1);
   }
 
@@ -803,25 +910,34 @@ int main(int argc, char **argv) {
   struct stat path;
   stat(controller, &path);
   if (S_ISDIR(path.st_mode)) {
-    fprintf(stderr, "Controller path '%s' is a directory. Please specify a path to an existing controller file.\n", controller);
+    fprintf(stderr,
+            "Controller path '%s' is a directory. Please specify a path to an "
+            "existing controller file.\n",
+            controller);
     exit(1);
   };
 
   // Compute path to controller file
-  char *controller_name =
-    strrchr(controller, PATH_SEPARATOR[0]) == NULL ? NULL : strdup(strrchr(controller, PATH_SEPARATOR[0]));
+  char *controller_name = strrchr(controller, PATH_SEPARATOR[0]) == NULL
+                              ? NULL
+                              : strdup(strrchr(controller, PATH_SEPARATOR[0]));
   // Get extension from controller name (robust against relative paths)
   if (!controller_name)
-    controller_extension = strrchr(controller, '.') == NULL ? NULL : strdup(strrchr(controller, '.'));
+    controller_extension = strrchr(controller, '.') == NULL
+                               ? NULL
+                               : strdup(strrchr(controller, '.'));
   else
-    controller_extension = strrchr(controller_name, '.') == NULL ? NULL : strdup(strrchr(controller_name, '.'));
+    controller_extension = strrchr(controller_name, '.') == NULL
+                               ? NULL
+                               : strdup(strrchr(controller_name, '.'));
 #ifdef _WIN32
   controller_path = strdup(".\\");
 #else
   controller_path = strdup("./");
 #endif
   if (strrchr(controller, PATH_SEPARATOR[0])) {
-    const size_t controller_file_size = strlen(strrchr(controller, PATH_SEPARATOR[0])) - 1;
+    const size_t controller_file_size =
+        strlen(strrchr(controller, PATH_SEPARATOR[0])) - 1;
     const size_t controller_size = strlen(controller);
     const size_t controller_path_size = controller_size - controller_file_size;
     char *controller_path_tmp = malloc(controller_path_size + 1);
@@ -830,8 +946,10 @@ int main(int argc, char **argv) {
 
     // Change to controller directory and edit controller file path
     chdir(controller_path_tmp);
-    const size_t new_controller_size = snprintf(NULL, 0, "%s%s", controller_path, controller_name + 1) + 1;
-    snprintf(controller, new_controller_size, "%s%s", controller_path, controller_name + 1);
+    const size_t new_controller_size =
+        snprintf(NULL, 0, "%s%s", controller_path, controller_name + 1) + 1;
+    snprintf(controller, new_controller_size, "%s%s", controller_path,
+             controller_name + 1);
     char *tmp_realloc = realloc(controller, new_controller_size);
     if (!tmp_realloc)
       exit(1);
@@ -874,14 +992,16 @@ int main(int argc, char **argv) {
     // Add quotation marks to the controller string if it contains whitespaces
     char *controller_formated = NULL;
     if (strstr(controller, " ") != NULL) {
-      const size_t controller_formated_size = snprintf(NULL, 0, "\"%s\"", controller) + 1;
+      const size_t controller_formated_size =
+          snprintf(NULL, 0, "\"%s\"", controller) + 1;
       controller_formated = malloc(controller_formated_size);
       sprintf(controller_formated, "\"%s\"", controller);
     } else
       controller_formated = strdup(controller);
     new_argv = add_single_argument(new_argv, &current_size, "python");
     new_argv = add_single_argument(new_argv, &current_size, "-u");
-    new_argv = add_single_argument(new_argv, &current_size, controller_formated);
+    new_argv =
+        add_single_argument(new_argv, &current_size, controller_formated);
 #else
     new_argv = add_single_argument(new_argv, &current_size, "python3");
     new_argv = add_single_argument(new_argv, &current_size, "-u");
@@ -900,7 +1020,8 @@ int main(int argc, char **argv) {
   else if (strcmp(controller_extension, ".m") == 0) {
     matlab_config_environment();
 
-    // If no MATLAB installation path was given in command line, check in default installation folder
+    // If no MATLAB installation path was given in command line, check in
+    // default installation folder
     if (!matlab_path && !get_matlab_path())
       return -1;
 
@@ -919,7 +1040,8 @@ int main(int argc, char **argv) {
     const char *launcher_path = "/lib/controller/matlab";
 #endif
     // matlab_command starts the launcher.m file contained in the lib controller
-    const size_t matlab_command_size = snprintf(NULL, 0, "-sd \"%s%s\"", WEBOTS_HOME, launcher_path) + 1;
+    const size_t matlab_command_size =
+        snprintf(NULL, 0, "-sd \"%s%s\"", WEBOTS_HOME, launcher_path) + 1;
     char *matlab_command = malloc(matlab_command_size);
     sprintf(matlab_command, "-sd \"%s%s\"", WEBOTS_HOME, launcher_path);
 
@@ -943,7 +1065,8 @@ int main(int argc, char **argv) {
     free(matlab_command);
   }
   // Java controller
-  else if (strcmp(controller_extension, ".jar") == 0 || strcmp(controller_extension, ".class") == 0) {
+  else if (strcmp(controller_extension, ".jar") == 0 ||
+           strcmp(controller_extension, ".class") == 0) {
     exec_java_config_environment();
 
     // Write path to java lib controller
@@ -954,7 +1077,8 @@ int main(int argc, char **argv) {
 #elif defined __linux__
     const char *java_lib_controller = "/lib/controller/java";
 #endif
-    const size_t lib_controller_size = snprintf(NULL, 0, "%s%s", WEBOTS_HOME, java_lib_controller) + 1;
+    const size_t lib_controller_size =
+        snprintf(NULL, 0, "%s%s", WEBOTS_HOME, java_lib_controller) + 1;
     char *lib_controller = malloc(lib_controller_size);
     sprintf(lib_controller, "%s%s", WEBOTS_HOME, java_lib_controller);
 
@@ -966,39 +1090,53 @@ int main(int argc, char **argv) {
     char *short_controller_path = strdup(controller_path);
     short_controller_path[strlen(controller_path) - 1] = '\0';
 #ifdef _WIN32
-    // Write the 'classpath' option (mandatory for java controllers) with the path to Controller.jar and the path to the
-    // controller
-    const size_t classpath_size = snprintf(NULL, 0, "\"%s%s%s\"", lib_controller, jar_path, short_controller_path) + 1;
+    // Write the 'classpath' option (mandatory for java controllers) with the
+    // path to Controller.jar and the path to the controller
+    const size_t classpath_size =
+        snprintf(NULL, 0, "\"%s%s%s\"", lib_controller, jar_path,
+                 short_controller_path) +
+        1;
     char *classpath = malloc(classpath_size);
-    sprintf(classpath, "\"%s%s%s\"", lib_controller, jar_path, short_controller_path);
+    sprintf(classpath, "\"%s%s%s\"", lib_controller, jar_path,
+            short_controller_path);
 
-    // Write the '-Djava.library.path' option (mandatory for java controllers) with the path to the libController
-    const size_t java_library_size = snprintf(NULL, 0, "\"-Djava.library.path=%s\"", lib_controller) + 1;
+    // Write the '-Djava.library.path' option (mandatory for java controllers)
+    // with the path to the libController
+    const size_t java_library_size =
+        snprintf(NULL, 0, "\"-Djava.library.path=%s\"", lib_controller) + 1;
     char *java_library = malloc(java_library_size);
     sprintf(java_library, "\"-Djava.library.path=%s\"", lib_controller);
 #else
-    // Write the 'classpath' option (mandatory for java controllers) with the path to Controller.jar and the path to the
-    // controller
-    const size_t classpath_size = snprintf(NULL, 0, "%s%s%s", lib_controller, jar_path, short_controller_path) + 1;
+    // Write the 'classpath' option (mandatory for java controllers) with the
+    // path to Controller.jar and the path to the controller
+    const size_t classpath_size = snprintf(NULL, 0, "%s%s%s", lib_controller,
+                                           jar_path, short_controller_path) +
+                                  1;
     char *classpath = malloc(classpath_size);
-    sprintf(classpath, "%s%s%s", lib_controller, jar_path, short_controller_path);
+    sprintf(classpath, "%s%s%s", lib_controller, jar_path,
+            short_controller_path);
 
-    // Write the '-Djava.library.path' option (mandatory for java controllers) with the path to the libController
-    const size_t java_library_size = snprintf(NULL, 0, "-Djava.library.path=%s", lib_controller) + 1;
+    // Write the '-Djava.library.path' option (mandatory for java controllers)
+    // with the path to the libController
+    const size_t java_library_size =
+        snprintf(NULL, 0, "-Djava.library.path=%s", lib_controller) + 1;
     char *java_library = malloc(java_library_size);
     sprintf(java_library, "-Djava.library.path=%s", lib_controller);
 #endif
     if (!controller_name)
       controller_name = strrchr(controller, PATH_SEPARATOR[0]);
-    controller_name[strlen(controller_name) - strlen(controller_extension)] = '\0';
+    controller_name[strlen(controller_name) - strlen(controller_extension)] =
+        '\0';
     size_t current_size = 0;
     char **new_argv = NULL;
-    // Java command has the following syntax: 'java -classpath [...] -Djava.library.path=[...] controller_name'
+    // Java command has the following syntax: 'java -classpath [...]
+    // -Djava.library.path=[...] controller_name'
     new_argv = add_single_argument(new_argv, &current_size, "java");
     new_argv = add_single_argument(new_argv, &current_size, "-classpath");
     new_argv = add_single_argument(new_argv, &current_size, classpath);
     new_argv = add_single_argument(new_argv, &current_size, java_library);
-    new_argv = add_single_argument(new_argv, &current_size, controller_name + 1);
+    new_argv =
+        add_single_argument(new_argv, &current_size, controller_name + 1);
     new_argv = add_controller_arguments(new_argv, argv, &current_size, false);
     new_argv = add_single_argument(new_argv, &current_size, NULL);
 #ifdef _WIN32
@@ -1014,7 +1152,8 @@ int main(int argc, char **argv) {
     free(java_library);
   } else
     fprintf(stderr,
-            "The file extension '%s' is not supported as webots controller. Supported file types are executable files, '.py', "
+            "The file extension '%s' is not supported as webots controller. "
+            "Supported file types are executable files, '.py', "
             "'.jar', '.class' and '.m'.\n",
             controller_extension);
 

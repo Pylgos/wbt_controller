@@ -15,7 +15,8 @@
  */
 
 /**************************************************************************************/
-/* Description:  Common definition of the 'WbMouseState' for both the C and C++ APIs. */
+/* Description:  Common definition of the 'WbMouseState' for both the C and C++
+ * APIs. */
 /**************************************************************************************/
 
 #ifndef WB_MOUSE_STATE_H

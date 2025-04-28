@@ -24,14 +24,14 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/un.h>
-#endif  // _WIN32
+#endif // _WIN32
 
+#include "scheduler.h"
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <webots/types.h>
-#include "scheduler.h"
 
 GPipe *g_pipe_new(const char *path) {
   GPipe *p = malloc(sizeof(GPipe));
@@ -39,7 +39,8 @@ GPipe *g_pipe_new(const char *path) {
   p->fd[0] = 0;
   p->fd[1] = 0;
   while (1) {
-    p->handle = CreateFile(path, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+    p->handle = CreateFile(path, GENERIC_READ | GENERIC_WRITE, 0, NULL,
+                           OPEN_EXISTING, 0, NULL);
     if (p->handle != INVALID_HANDLE_VALUE)
       break;
     DWORD dwError = GetLastError();
@@ -48,7 +49,8 @@ GPipe *g_pipe_new(const char *path) {
       return NULL;
     }
     if (!WaitNamedPipe(path, 5000)) {
-      fprintf(stderr, "Cannot open pipe file: %s after trying for 5 seconds\n", path);
+      fprintf(stderr, "Cannot open pipe file: %s after trying for 5 seconds\n",
+              path);
       free(p);
       return NULL;
     }
@@ -57,7 +59,8 @@ GPipe *g_pipe_new(const char *path) {
   p->handle = socket(PF_UNIX, SOCK_STREAM, 0);
   if (p->handle < 0) {
     fprintf(stderr, "socket() failed\n");
-    // cppcheck-suppress memleak ; otherwise cppcheck shows a false positive for p->handle
+    // cppcheck-suppress memleak ; otherwise cppcheck shows a false positive for
+    // p->handle
     free(p);
     return NULL;
   }
@@ -65,7 +68,8 @@ GPipe *g_pipe_new(const char *path) {
   memset(&address, 0, sizeof(struct sockaddr_un));
   address.sun_family = AF_UNIX;
   strncpy(address.sun_path, path, sizeof(address.sun_path));
-  if (connect(p->handle, (struct sockaddr *)&address, sizeof(struct sockaddr_un)) != 0) {
+  if (connect(p->handle, (struct sockaddr *)&address,
+              sizeof(struct sockaddr_un)) != 0) {
     close(p->handle);
     free(p);
     return NULL;
@@ -86,9 +90,7 @@ void g_pipe_delete(GPipe *p) {
   free(p);
 }
 
-static void broken_pipe() {
-  exit(1);
-}
+static void broken_pipe() { exit(1); }
 
 void g_pipe_send(GPipe *p, const char *data, int size) {
 #ifdef _WIN32
@@ -119,7 +121,7 @@ int g_pipe_receive(GPipe *p, char *data, int size) {
         break;
       e = ERROR_SUCCESS;
     }
-  } while (!success);  // repeat loop while ERROR_MORE_DATA
+  } while (!success); // repeat loop while ERROR_MORE_DATA
   if (e != ERROR_SUCCESS)
     broken_pipe();
   return (int)nb_read;

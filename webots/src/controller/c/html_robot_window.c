@@ -19,9 +19,9 @@
 // Note: this file should be renamed to robot_window.c when the Qt robot
 // windows are disabled.
 
-#include <webots/utils/system.h>
 #include "dynamic_library.h"
 #include "html_robot_window_private.h"
+#include <webots/utils/system.h>
 
 #include <assert.h>
 #include <stdio.h>
@@ -43,15 +43,15 @@ static void wb_robot_window_unload_library() {
 bool wb_robot_window_load_library(const char *name) {
   if (name[0] == '\0')
     return false;
-  // search for the corresponding HTML file, e.g., /fullpath/e-puck.dll => /fullpath/e-puck.html
-  // On windows,  the name is /fullpath/e-puck.dll
-  // On Linux,    the name is /fullpath/libe-puck.so
-  // on macOS,    the name is /fullpath/libe-puck.dylib
+  // search for the corresponding HTML file, e.g., /fullpath/e-puck.dll =>
+  // /fullpath/e-puck.html On windows,  the name is /fullpath/e-puck.dll On
+  // Linux,    the name is /fullpath/libe-puck.so on macOS,    the name is
+  // /fullpath/libe-puck.dylib
   int l = strlen(name);
   assert(l > 3);
   char *html = (char *)malloc(l + 6);
   memcpy(html, name, l + 1);
-#ifndef _WIN32  // we have to remove the lib prefix
+#ifndef _WIN32 // we have to remove the lib prefix
   int slash;
   for (slash = l; html[slash] != '/' && slash >= 0; slash--) {
   }
@@ -85,12 +85,18 @@ bool wb_robot_window_load_library(const char *name) {
     fprintf(stderr, "Error: failed to load %s library\n", name);
     return false;
   }
-  wb_robot_window_init = (void (*)())dynamic_library_get_symbol(library_handle, "wb_robot_window_init");
-  wb_robot_window_step = (void (*)(int))dynamic_library_get_symbol(library_handle, "wb_robot_window_step");
-  wb_robot_window_cleanup = (void (*)())dynamic_library_get_symbol(library_handle, "wb_robot_window_cleanup");
+  wb_robot_window_init = (void (*)())dynamic_library_get_symbol(
+      library_handle, "wb_robot_window_init");
+  wb_robot_window_step = (void (*)(int))dynamic_library_get_symbol(
+      library_handle, "wb_robot_window_step");
+  wb_robot_window_cleanup = (void (*)())dynamic_library_get_symbol(
+      library_handle, "wb_robot_window_cleanup");
   if (!wb_robot_window_step) {
     wb_robot_window_unload_library();
-    fprintf(stderr, "Error: cannot find any 'void wb_robot_window_step(int)' function in the %s robot window library\n", name);
+    fprintf(stderr,
+            "Error: cannot find any 'void wb_robot_window_step(int)' function "
+            "in the %s robot window library\n",
+            name);
     return false;
   }
   return true;

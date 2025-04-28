@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/touch_sensor.h>
 #include <webots/TouchSensor.hpp>
+#include <webots/touch_sensor.h>
 
 using namespace webots;
 
@@ -22,9 +22,7 @@ void TouchSensor::enable(int sampling_period) {
   wb_touch_sensor_enable(getTag(), sampling_period);
 }
 
-void TouchSensor::disable() {
-  wb_touch_sensor_disable(getTag());
-}
+void TouchSensor::disable() { wb_touch_sensor_disable(getTag()); }
 
 int TouchSensor::getSamplingPeriod() const {
   return wb_touch_sensor_get_sampling_period(getTag());

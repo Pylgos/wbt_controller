@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the Robot node                */
+/* Description:  Webots C programming interface for the Robot node */
 /**********************************************************************************/
 
 #ifndef WB_ROBOT_H
@@ -38,9 +38,13 @@
 #define main() _kros_main()
 #endif
 
-typedef void *WbMutexRef;  // identifier of a mutex
+typedef void *WbMutexRef; // identifier of a mutex
 
-typedef enum { WB_MODE_SIMULATION = 0, WB_MODE_CROSS_COMPILATION, WB_MODE_REMOTE_CONTROL } WbRobotMode;
+typedef enum {
+  WB_MODE_SIMULATION = 0,
+  WB_MODE_CROSS_COMPILATION,
+  WB_MODE_REMOTE_CONTROL
+} WbRobotMode;
 
 typedef enum {
   WB_EVENT_QUIT = -1,
@@ -65,21 +69,29 @@ int wb_robot_init();
  * the standard error cannot be modified from a dll
  */
 #else
-int wb_robot_init_msvc();  // internally, this function just calls wb_robot_init()
-#define wb_robot_init() (setvbuf(stdout, NULL, _IONBF, 0), setvbuf(stderr, NULL, _IONBF, 0), wb_robot_init_msvc())
+int wb_robot_init_msvc(); // internally, this function just calls
+                          // wb_robot_init()
+#define wb_robot_init()                                                        \
+  (setvbuf(stdout, NULL, _IONBF, 0), setvbuf(stderr, NULL, _IONBF, 0),         \
+   wb_robot_init_msvc())
 #endif
 
-int wb_robot_step_begin(int duration);  // milliseconds
+int wb_robot_step_begin(int duration); // milliseconds
 int wb_robot_step_end();
-int wb_robot_step(int duration);  // milliseconds
+int wb_robot_step(int duration); // milliseconds
 
-#ifdef __CYGWIN__  // In that case, we need to flush explicitly the stdout/stdin streams otherwise they are buffered
-// We cannot call fflush from the libController as libController is compiled with gcc8 and won't flush the stdout/stderr
-// of a gcc7 (cygwin) compiled binary. Therefore, we need to perform the fflush in a gcc7 compiled code, e.g., in a macro here.
+#ifdef __CYGWIN__ // In that case, we need to flush explicitly the stdout/stdin
+                  // streams otherwise they are buffered
+// We cannot call fflush from the libController as libController is compiled
+// with gcc8 and won't flush the stdout/stderr of a gcc7 (cygwin) compiled
+// binary. Therefore, we need to perform the fflush in a gcc7 compiled code,
+// e.g., in a macro here.
 #define wb_robot_step(d) (fflush(NULL), wb_robot_step(d))
 #endif
 
-WbUserInputEvent wb_robot_wait_for_user_input_event(WbUserInputEvent event_type, int timeout);  // milliseconds
+WbUserInputEvent
+wb_robot_wait_for_user_input_event(WbUserInputEvent event_type,
+                                   int timeout); // milliseconds
 void wb_robot_cleanup();
 double wb_robot_get_time();
 const char *wb_robot_get_urdf(const char *prefix);
@@ -108,15 +120,16 @@ double wb_robot_battery_sensor_get_value();
 
 // robot multi-thread API
 #ifndef WB_MATLAB_LOADLIBRARY
-void wb_robot_task_new(void (*task)(void *), void *param);  // create a task
+void wb_robot_task_new(void (*task)(void *), void *param); // create a task
 WbMutexRef wb_robot_mutex_new();
 void wb_robot_mutex_lock(WbMutexRef);
 void wb_robot_mutex_unlock(WbMutexRef);
 void wb_robot_mutex_delete(WbMutexRef);
 #endif
 
-// Motion editor specfic function : Please don't use this function outside qt_utils
-// This function doesn't work if the robot window has not been shown at lease once
+// Motion editor specfic function : Please don't use this function outside
+// qt_utils This function doesn't work if the robot window has not been shown at
+// lease once
 void wb_robot_pin_to_static_environment(bool pin);
 
 // Deprecated functions

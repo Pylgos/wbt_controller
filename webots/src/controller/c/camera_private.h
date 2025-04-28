@@ -34,8 +34,8 @@ typedef struct {
   bool has_recognition;
   bool enable_recognition;
   int recognition_sampling_period;
-  int recognized_object_number;                   // number of object currrently recognized
-  WbCameraRecognitionObject *recognized_objects;  // list of objects
+  int recognized_object_number; // number of object currrently recognized
+  WbCameraRecognitionObject *recognized_objects; // list of objects
   bool segmentation;
   bool segmentation_enabled;
   bool segmentation_changed;
@@ -45,4 +45,4 @@ typedef struct {
 void camera_allocate_segmentation_image(WbDeviceTag tag, int size);
 const unsigned char *camera_get_segmentation_image_buffer(WbDeviceTag tag);
 
-#endif  // CAMERA_PRIVATE_H
+#endif // CAMERA_PRIVATE_H

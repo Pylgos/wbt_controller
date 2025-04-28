@@ -15,7 +15,8 @@
  */
 
 /*************************************************************************************/
-/* Description:  Common definition of the 'WbLidarPoint' for both the C and C++ APIs */
+/* Description:  Common definition of the 'WbLidarPoint' for both the C and C++
+ * APIs */
 /*************************************************************************************/
 
 #ifndef WB_LIDAR_POINT_H

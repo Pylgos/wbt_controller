@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-#include <stdlib.h>  // atoi
+#include <stdlib.h> // atoi
 #ifdef _WIN32
 #include <windows.h>
 #endif
-#include <assert.h>
-#include <stdio.h>
-#include <string.h>  // strlen, memcpy
-#include <unistd.h>
-#include <webots/types.h>
 #include "abstract_camera.h"
 #include "camera_private.h"
 #include "device_private.h"
@@ -31,16 +26,21 @@
 #include "robot_private.h"
 #include "scheduler.h"
 #include "tcp_client.h"
+#include <assert.h>
+#include <stdio.h>
+#include <string.h> // strlen, memcpy
+#include <unistd.h>
+#include <webots/types.h>
 #ifdef _WIN32
 #include <wininet.h>
-#else  // __APPLE__ || __linux__
+#else // __APPLE__ || __linux__
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <unistd.h>
 #ifndef __APPLE__
-extern int gethostname(char *n, size_t l);  // fixes problem in unistd.h on Linux
-#endif  // __APPLE__
-#endif  // _WIN32
+extern int gethostname(char *n, size_t l); // fixes problem in unistd.h on Linux
+#endif // __APPLE__
+#endif // _WIN32
 
 #define SCHEDULER_URL_OK 0
 #define SCHEDULER_URL_SYNTAX_ERROR 1
@@ -53,7 +53,8 @@ char *scheduler_meta = NULL;
 GPipe *scheduler_pipe = NULL;
 int scheduler_client = -1;
 
-int scheduler_init_remote(const char *host, int port, const char *robot_name, char *buffer) {
+int scheduler_init_remote(const char *host, int port, const char *robot_name,
+                          char *buffer) {
   scheduler_client = tcp_client_new(host, port, buffer);
   if (scheduler_client == -1)
     return false;
@@ -61,7 +62,7 @@ int scheduler_init_remote(const char *host, int port, const char *robot_name, ch
   const int length = robot_name ? strlen(robot_name) + 17 : 4;
   char *init_message = malloc(length);
   memcpy(init_message, "CTR", 3);
-  if (robot_name) {  // send robot name
+  if (robot_name) { // send robot name
     memcpy(init_message + 3, "\nRobot-Name: ", 13);
     memcpy(init_message + 16, robot_name, strlen(robot_name));
   }
@@ -70,22 +71,28 @@ int scheduler_init_remote(const char *host, int port, const char *robot_name, ch
   free(init_message);
 
   char *acknowledge_message = malloc(10);
-  tcp_client_receive(scheduler_client, acknowledge_message, 10);  // wait for ack message from Webots
+  tcp_client_receive(scheduler_client, acknowledge_message,
+                     10); // wait for ack message from Webots
   if (strncmp(acknowledge_message, "FAILED", 6) == 0) {
     snprintf(buffer, ERROR_BUFFER_SIZE, "%s",
-             robot_name == NULL ?
-               "No robot name provided, exactly one robot should be set with an <extern> controller in the Webots simulation" :
-               "The specified robot is not in the list of robots with <extern> controllers");
+             robot_name == NULL
+                 ? "No robot name provided, exactly one robot should be set "
+                   "with an <extern> controller in the Webots simulation"
+                 : "The specified robot is not in the list of robots with "
+                   "<extern> controllers");
     return false;
   } else if (strncmp(acknowledge_message, "PROCESSING", 10) == 0) {
-    snprintf(buffer, ERROR_BUFFER_SIZE, "The Webots simulation world is not yet ready");
+    snprintf(buffer, ERROR_BUFFER_SIZE,
+             "The Webots simulation world is not yet ready");
     return false;
   } else if (strncmp(acknowledge_message, "FORBIDDEN", 9) == 0) {
-    fprintf(stderr, "Error: The connection was closed by Webots. The robot is already connected or your IP address is not "
+    fprintf(stderr, "Error: The connection was closed by Webots. The robot is "
+                    "already connected or your IP address is not "
                     "allowed by this instance of Webots.\n");
     exit(EXIT_FAILURE);
   } else if (strncmp(acknowledge_message, "CONNECTED", 9) != 0) {
-    fprintf(stderr, "Error: Unknown Webots response %s.\n", acknowledge_message);
+    fprintf(stderr, "Error: Unknown Webots response %s.\n",
+            acknowledge_message);
     exit(EXIT_FAILURE);
   }
   free(acknowledge_message);
@@ -116,9 +123,11 @@ int scheduler_init_local(const char *pipe) {
 void scheduler_cleanup() {
   int c = 0;
   if (scheduler_is_ipc())
-    g_pipe_send(scheduler_pipe, (const char *)&c, 4);  // to make the Webots pipe reading thread exit
+    g_pipe_send(scheduler_pipe, (const char *)&c,
+                4); // to make the Webots pipe reading thread exit
   if (scheduler_is_tcp())
-    tcp_client_send(scheduler_client, (const char *)&c, 4);  // to make the Webots pipe reading thread exit
+    tcp_client_send(scheduler_client, (const char *)&c,
+                    4); // to make the Webots pipe reading thread exit
   free(scheduler_data);
   free(scheduler_meta);
 
@@ -168,7 +177,9 @@ WbRequest *scheduler_read_data_remote() {
 
   // receive and read the total data size (excluding image data)
   meta_size += scheduler_receive_meta(meta_size, sizeof(unsigned int));
-  const int total_data_size = scheduler_read_int32(&scheduler_meta[sizeof(unsigned short)]) + sizeof(int);
+  const int total_data_size =
+      scheduler_read_int32(&scheduler_meta[sizeof(unsigned short)]) +
+      sizeof(int);
 
   // set size at beginning of data array for request
   *((int *)(scheduler_data)) = total_data_size;
@@ -179,7 +190,8 @@ WbRequest *scheduler_read_data_remote() {
     scheduler_data_size = total_data_size;
     scheduler_data = realloc(scheduler_data, scheduler_data_size);
     if (!scheduler_data) {
-      fprintf(stderr, "Error reading Webots TCP socket messages: not enough memory.\n");
+      fprintf(stderr,
+              "Error reading Webots TCP socket messages: not enough memory.\n");
       exit(EXIT_FAILURE);
     }
   }
@@ -187,75 +199,88 @@ WbRequest *scheduler_read_data_remote() {
   // iterate over each chunk
   for (int c = 0; c < nb_chunks; c++) {
     // read chunk size and chunk type
-    scheduler_meta = realloc(scheduler_meta, meta_size + sizeof(unsigned int) + sizeof(unsigned char));
+    scheduler_meta = realloc(scheduler_meta, meta_size + sizeof(unsigned int) +
+                                                 sizeof(unsigned char));
     if (!scheduler_meta) {
       fprintf(stderr, "Error receiving Webots request: not enough memory.\n");
       exit(EXIT_FAILURE);
     }
-    const int chunk_info_size = scheduler_receive_meta(meta_size, sizeof(unsigned int) + sizeof(unsigned char));
+    const int chunk_info_size = scheduler_receive_meta(
+        meta_size, sizeof(unsigned int) + sizeof(unsigned char));
     const int chunk_size = scheduler_read_int32(scheduler_meta + meta_size);
-    const unsigned char chunk_type = scheduler_read_char(scheduler_meta + meta_size + sizeof(unsigned int));
+    const unsigned char chunk_type =
+        scheduler_read_char(scheduler_meta + meta_size + sizeof(unsigned int));
     meta_size += chunk_info_size;
 
     switch (chunk_type) {
-      case TCP_DATA_TYPE:
-        data_size += scheduler_receive_data(data_size, chunk_size);
+    case TCP_DATA_TYPE:
+      data_size += scheduler_receive_data(data_size, chunk_size);
 
-        // save the time step from the first chunk
-        if (c == 0) {
-          delay = scheduler_read_int32(&scheduler_data[sizeof(unsigned int)]);
-          if (delay >= 0)  // not immediate
-            scheduler_actual_step = delay;
+      // save the time step from the first chunk
+      if (c == 0) {
+        delay = scheduler_read_int32(&scheduler_data[sizeof(unsigned int)]);
+        if (delay >= 0) // not immediate
+          scheduler_actual_step = delay;
+      }
+      break;
+
+    case TCP_IMAGE_TYPE:
+      // read the rendering device tag and command
+      scheduler_meta =
+          realloc(scheduler_meta, meta_size + sizeof(short unsigned int) +
+                                      sizeof(unsigned char));
+      if (!scheduler_meta) {
+        fprintf(stderr, "Error receiving Webots request: not enough memory.\n");
+        exit(EXIT_FAILURE);
+      }
+      const int image_info_size = scheduler_receive_meta(
+          meta_size, sizeof(short unsigned int) + sizeof(unsigned char));
+      const short unsigned int tag =
+          scheduler_read_short(scheduler_meta + meta_size);
+      const unsigned char command = scheduler_read_char(
+          scheduler_meta + meta_size + sizeof(short unsigned int));
+      meta_size += image_info_size;
+
+      WbDevice *device = robot_get_device(tag);
+      if (!device) {
+        fprintf(stderr, "Error: Device doesn't no exist.\n");
+        exit(EXIT_FAILURE);
+      }
+
+      switch (command) {
+      case C_ABSTRACT_CAMERA_SERIAL_IMAGE:
+        abstract_camera_allocate_image(device, chunk_size);
+        const unsigned char *image =
+            wbr_abstract_camera_get_image_buffer(device);
+        if (!image) {
+          fprintf(stderr, "Error: Cannot write the image to the rendering "
+                          "device memory.\n");
+          exit(EXIT_FAILURE);
         }
+        scheduler_receive_image(image, chunk_size);
         break;
-
-      case TCP_IMAGE_TYPE:
-        // read the rendering device tag and command
-        scheduler_meta = realloc(scheduler_meta, meta_size + sizeof(short unsigned int) + sizeof(unsigned char));
-        if (!scheduler_meta) {
-          fprintf(stderr, "Error receiving Webots request: not enough memory.\n");
+      case C_CAMERA_SERIAL_SEGMENTATION_IMAGE:
+        camera_allocate_segmentation_image(tag, chunk_size);
+        const unsigned char *image_segmentation =
+            camera_get_segmentation_image_buffer(tag);
+        if (!image_segmentation) {
+          fprintf(stderr, "Error: Cannot write the segmentation image to the "
+                          "camera memory.\n");
           exit(EXIT_FAILURE);
         }
-        const int image_info_size = scheduler_receive_meta(meta_size, sizeof(short unsigned int) + sizeof(unsigned char));
-        const short unsigned int tag = scheduler_read_short(scheduler_meta + meta_size);
-        const unsigned char command = scheduler_read_char(scheduler_meta + meta_size + sizeof(short unsigned int));
-        meta_size += image_info_size;
-
-        WbDevice *device = robot_get_device(tag);
-        if (!device) {
-          fprintf(stderr, "Error: Device doesn't no exist.\n");
-          exit(EXIT_FAILURE);
-        }
-
-        switch (command) {
-          case C_ABSTRACT_CAMERA_SERIAL_IMAGE:
-            abstract_camera_allocate_image(device, chunk_size);
-            const unsigned char *image = wbr_abstract_camera_get_image_buffer(device);
-            if (!image) {
-              fprintf(stderr, "Error: Cannot write the image to the rendering device memory.\n");
-              exit(EXIT_FAILURE);
-            }
-            scheduler_receive_image(image, chunk_size);
-            break;
-          case C_CAMERA_SERIAL_SEGMENTATION_IMAGE:
-            camera_allocate_segmentation_image(tag, chunk_size);
-            const unsigned char *image_segmentation = camera_get_segmentation_image_buffer(tag);
-            if (!image_segmentation) {
-              fprintf(stderr, "Error: Cannot write the segmentation image to the camera memory.\n");
-              exit(EXIT_FAILURE);
-            }
-            scheduler_receive_image(image_segmentation, chunk_size);
-            break;
-          default:
-            fprintf(stderr, "Error: Unsupported image data received on TCP connection.\n");
-            exit(EXIT_FAILURE);
-            break;
-        }
+        scheduler_receive_image(image_segmentation, chunk_size);
         break;
       default:
-        fprintf(stderr, "Error: Unsupported chunk type on TCP connection.\n");
+        fprintf(stderr,
+                "Error: Unsupported image data received on TCP connection.\n");
         exit(EXIT_FAILURE);
         break;
+      }
+      break;
+    default:
+      fprintf(stderr, "Error: Unsupported chunk type on TCP connection.\n");
+      exit(EXIT_FAILURE);
+      break;
     }
   }
 
@@ -281,7 +306,8 @@ WbRequest *scheduler_read_data_local() {
   int delay = 0, size = 0, socket_size = 0;
 
   do
-    size += g_pipe_receive(scheduler_pipe, scheduler_data + size, sizeof(int) - size);
+    size += g_pipe_receive(scheduler_pipe, scheduler_data + size,
+                           sizeof(int) - size);
   while (size != sizeof(int));
 
   // read the size of the socket chunk
@@ -292,7 +318,8 @@ WbRequest *scheduler_read_data_local() {
     scheduler_data_size = socket_size;
     scheduler_data = realloc(scheduler_data, scheduler_data_size);
     if (scheduler_data == NULL) {
-      fprintf(stderr, "Error reading Webots socket messages: not enough memory.\n");
+      fprintf(stderr,
+              "Error reading Webots socket messages: not enough memory.\n");
       exit(EXIT_FAILURE);
     }
   }
@@ -301,7 +328,7 @@ WbRequest *scheduler_read_data_local() {
 
   // save the time step
   delay = scheduler_read_int32(&scheduler_data[sizeof(unsigned int)]);
-  if (delay >= 0)  // not immediate
+  if (delay >= 0) // not immediate
     scheduler_actual_step = delay;
 
   // create a request to hold the data
@@ -322,7 +349,9 @@ WbRequest *scheduler_read_data_local() {
 int scheduler_receive_meta(int pointer, size_t type_size) {
   int curr_size = 0;
   do
-    curr_size += tcp_client_receive(scheduler_client, scheduler_meta + pointer + curr_size, type_size - curr_size);
+    curr_size += tcp_client_receive(scheduler_client,
+                                    scheduler_meta + pointer + curr_size,
+                                    type_size - curr_size);
   while (curr_size != type_size);
 
   return curr_size;
@@ -336,10 +365,12 @@ int scheduler_receive_data(int pointer, int chunk_size) {
       block_size = 4096;
 
     if (scheduler_is_ipc())
-      curr_size += g_pipe_receive(scheduler_pipe, scheduler_data + pointer + curr_size, block_size);
+      curr_size += g_pipe_receive(
+          scheduler_pipe, scheduler_data + pointer + curr_size, block_size);
     else {
       assert(scheduler_is_tcp());
-      curr_size += tcp_client_receive(scheduler_client, scheduler_data + pointer + curr_size, block_size);
+      curr_size += tcp_client_receive(
+          scheduler_client, scheduler_data + pointer + curr_size, block_size);
     }
   }
 
@@ -353,18 +384,13 @@ void scheduler_receive_image(const unsigned char *buffer, int size) {
     if (block_size > 4096)
       block_size = 4096;
 
-    curr_size += tcp_client_receive(scheduler_client, (char *)buffer + curr_size, block_size);
+    curr_size += tcp_client_receive(scheduler_client,
+                                    (char *)buffer + curr_size, block_size);
   }
 }
 
-bool scheduler_is_ipc() {
-  return (scheduler_pipe != NULL);
-}
+bool scheduler_is_ipc() { return (scheduler_pipe != NULL); }
 
-bool scheduler_is_tcp() {
-  return (scheduler_client != -1);
-}
+bool scheduler_is_tcp() { return (scheduler_client != -1); }
 
-int scheduler_get_pipe_handle() {
-  return g_pipe_get_handle(scheduler_pipe);
-}
+int scheduler_get_pipe_handle() { return g_pipe_get_handle(scheduler_pipe); }

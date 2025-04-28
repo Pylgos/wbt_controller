@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C utility to parse messages                               */
+/* Description:  Webots C utility to parse messages */
 /**********************************************************************************/
 
 #ifndef WBU_STRING_H
@@ -32,4 +32,4 @@ char *wbu_string_replace(char *value, const char *before, const char *after);
 }
 #endif
 
-#endif  // WBU_STRING_H
+#endif // WBU_STRING_H

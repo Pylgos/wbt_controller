@@ -15,7 +15,8 @@
  */
 
 /**************************************************************************************/
-/* Description:  Common definition of the 'WbRadarTarget' for both the C and C++ APIs */
+/* Description:  Common definition of the 'WbRadarTarget' for both the C and C++
+ * APIs */
 /**************************************************************************************/
 
 #ifndef WB_RADAR_TARGET_H

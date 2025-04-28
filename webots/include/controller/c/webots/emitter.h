@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the Emitter node              */
+/* Description:  Webots C programming interface for the Emitter node */
 /**********************************************************************************/
 
 #ifndef WB_EMITTER_H

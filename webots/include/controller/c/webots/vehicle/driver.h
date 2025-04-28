@@ -15,8 +15,9 @@
  */
 
 /*
- * Description:   Driver library to be used with the 'Car' proto (or any proto inherited by 'Car') and the car library
- * Comments:      Sponsored by the CTI project RO2IVSim
+ * Description:   Driver library to be used with the 'Car' proto (or any proto
+ * inherited by 'Car') and the car library Comments:      Sponsored by the CTI
+ * project RO2IVSim
  *                (http://transport.epfl.ch/simulator-for-mobile-robots-and-intelligent-vehicles)
  */
 
@@ -31,7 +32,11 @@ extern "C" {
 
 typedef enum { OFF, RIGHT, LEFT } WbuDriverIndicatorState;
 
-typedef enum { UNDEFINED_CONTROL_MODE = -1, SPEED = 0, TORQUE } WbuDriverControlMode;
+typedef enum {
+  UNDEFINED_CONTROL_MODE = -1,
+  SPEED = 0,
+  TORQUE
+} WbuDriverControlMode;
 
 typedef enum { DOWN, SLOW, NORMAL, FAST } WbuDriverWiperMode;
 
@@ -94,4 +99,4 @@ wbu_wipers_mode wbu_driver_get_wipers_mode() WB_DEPRECATED;
 }
 #endif
 
-#endif  // DRIVER_H
+#endif // DRIVER_H

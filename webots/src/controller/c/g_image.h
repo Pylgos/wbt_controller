@@ -51,12 +51,14 @@ void g_image_flip(GImage *);
 void g_image_delete(GImage *);
 int g_image_save(GImage *, const char *filename, char quality);
 // the caller is responsible to free *target_data
-int g_image_save_to_jpeg_buffer(GImage *img, unsigned char **target_data, unsigned long *target_data_size, char quality);
-int g_image_downscale(GImage *img, int new_width, int new_height, float max_range);
+int g_image_save_to_jpeg_buffer(GImage *img, unsigned char **target_data,
+                                unsigned long *target_data_size, char quality);
+int g_image_downscale(GImage *img, int new_width, int new_height,
+                      float max_range);
 unsigned char g_image_get_type(const char *filename);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  // G_IMAGE_H
+#endif // G_IMAGE_H

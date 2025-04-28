@@ -16,21 +16,22 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#else  // __linux__ || __APPLE__
+#else // __linux__ || __APPLE__
 #include <dlfcn.h>
 #endif
 
+#include "dynamic_library.h"
 #include <stdio.h>
 #include <string.h>
 #include <webots/utils/system.h>
-#include "dynamic_library.h"
 
 #ifdef _WIN32
-#define DYNAMIC_LIBRARY_LOAD(a) LoadLibraryEx(wbu_system_short_path(a), NULL, LOAD_WITH_ALTERED_SEARCH_PATH)
+#define DYNAMIC_LIBRARY_LOAD(a)                                                \
+  LoadLibraryEx(wbu_system_short_path(a), NULL, LOAD_WITH_ALTERED_SEARCH_PATH)
 #define DYNAMIC_LIBRARY_GETSYM(a, b) GetProcAddress(a, b)
 #define DYNAMIC_LIBRARY_UNLOAD(a) FreeLibrary(a)
 
-#else  // __linux__ || __APPLE__
+#else // __linux__ || __APPLE__
 #define DYNAMIC_LIBRARY_LOAD(a) dlopen(a, RTLD_LAZY | RTLD_GLOBAL)
 #define DYNAMIC_LIBRARY_GETSYM(a, b) dlsym(a, b)
 #define DYNAMIC_LIBRARY_UNLOAD(a) dlclose(a)
@@ -39,8 +40,10 @@
 static void dynamic_library_print_last_error() {
 #ifdef _WIN32
   LPVOID lpMsgBuf = NULL;
-  FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,
-                GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf, 0, NULL);
+  FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+                    FORMAT_MESSAGE_IGNORE_INSERTS,
+                NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                (LPTSTR)&lpMsgBuf, 0, NULL);
   // cppcheck-suppress nullPointer
   fprintf(stderr, "Error: %s (dynamic library)\n", (const char *)lpMsgBuf);
   LocalFree(lpMsgBuf);
@@ -64,10 +67,12 @@ DYNAMIC_LIBRARY_HANDLE dynamic_library_init(const char *libname) {
   tmpname[length] = '\0';
 #ifdef __linux__
   // dlopen() does not add .so to the filename, like windows does for .dll
-  if (length > 3 && (libname[length - 3] != '.' || libname[length - 2] != 's' || libname[length - 1] != 'o'))
+  if (length > 3 && (libname[length - 3] != '.' || libname[length - 2] != 's' ||
+                     libname[length - 1] != 'o'))
     strcat(tmpname, ".so");
 #endif
-  DYNAMIC_LIBRARY_HANDLE lib = (DYNAMIC_LIBRARY_HANDLE)DYNAMIC_LIBRARY_LOAD(tmpname);
+  DYNAMIC_LIBRARY_HANDLE lib =
+      (DYNAMIC_LIBRARY_HANDLE)DYNAMIC_LIBRARY_LOAD(tmpname);
   if (!lib)
     dynamic_library_print_last_error();
   free(tmpname);
@@ -79,7 +84,8 @@ void dynamic_library_cleanup(DYNAMIC_LIBRARY_HANDLE lib) {
     DYNAMIC_LIBRARY_UNLOAD(lib);
 }
 
-void *dynamic_library_get_symbol(DYNAMIC_LIBRARY_HANDLE lib, const char *symbol) {
+void *dynamic_library_get_symbol(DYNAMIC_LIBRARY_HANDLE lib,
+                                 const char *symbol) {
   if (!lib)
     return NULL;
   return (void *)DYNAMIC_LIBRARY_GETSYM(lib, symbol);

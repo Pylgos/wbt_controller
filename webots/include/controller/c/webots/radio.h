@@ -15,7 +15,7 @@
  */
 
 /**********************************************************************************/
-/* Description:  Webots C programming interface for the Radio node                */
+/* Description:  Webots C programming interface for the Radio node */
 /**********************************************************************************/
 
 #ifndef WB_RADIO_H
@@ -31,7 +31,8 @@ extern "C" {
 typedef void *WbRadioMessage;
 typedef void *WbRadioEvent;
 
-WbRadioMessage wb_radio_message_new(int length, const char *body, const char *destination);
+WbRadioMessage wb_radio_message_new(int length, const char *body,
+                                    const char *destination);
 void wb_radio_message_delete(WbRadioMessage);
 const char *wb_radio_message_get_destination(WbRadioMessage);
 int wb_radio_message_get_length(WbRadioMessage);

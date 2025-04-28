@@ -17,8 +17,8 @@
 #ifndef REMOTE_CONTROL_PRIVATE_H
 #define REMOTE_CONTROL_PRIVATE_H
 
-#include <webots/remote_control.h>
 #include "request.h"
+#include <webots/remote_control.h>
 
 // remote control
 void remote_control_init(const char *library_name);
@@ -38,4 +38,4 @@ void remote_control_handle_one_message(WbRequest *r, WbDeviceTag tag);
 
 bool remote_control_is_function_defined(const char *function_name);
 
-#endif  // REMOTE_CONTROL_PRIVATE_H
+#endif // REMOTE_CONTROL_PRIVATE_H

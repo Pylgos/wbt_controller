@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/keyboard.h>
 #include <webots/Keyboard.hpp>
+#include <webots/keyboard.h>
 
 using namespace webots;
 
@@ -22,14 +22,10 @@ void Keyboard::enable(int sampling_period) {
   wb_keyboard_enable(sampling_period);
 }
 
-void Keyboard::disable() {
-  wb_keyboard_disable();
-}
+void Keyboard::disable() { wb_keyboard_disable(); }
 
 int Keyboard::getSamplingPeriod() const {
   return wb_keyboard_get_sampling_period();
 }
 
-int Keyboard::getKey() const {
-  return wb_keyboard_get_key();
-}
+int Keyboard::getKey() const { return wb_keyboard_get_key(); }

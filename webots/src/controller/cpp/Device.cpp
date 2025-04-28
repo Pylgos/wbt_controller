@@ -13,9 +13,9 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
+#include <webots/Device.hpp>
 #include <webots/device.h>
 #include <webots/robot.h>
-#include <webots/Device.hpp>
 
 #include <cstdlib>
 
@@ -30,13 +30,9 @@ Device::Device(WbDeviceTag deviceTag) : tag(deviceTag) {
   name = wb_device_get_name(deviceTag);
 }
 
-int Device::getNodeType() const {
-  return wb_device_get_node_type(tag);
-}
+int Device::getNodeType() const { return wb_device_get_node_type(tag); }
 
-string Device::getModel() const {
-  return string(wb_device_get_model(tag));
-}
+string Device::getModel() const { return string(wb_device_get_model(tag)); }
 
 bool Device::hasType(int tag, int type) {
   if (tag == 0)

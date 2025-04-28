@@ -32,7 +32,8 @@ extern "C" {
 
 void wbu_default_robot_window_configure();
 void wbu_default_robot_window_update();
-void wbu_default_robot_window_set_images_max_size(int max_width, int max_height);
+void wbu_default_robot_window_set_images_max_size(int max_width,
+                                                  int max_height);
 
 #ifdef __cplusplus
 }

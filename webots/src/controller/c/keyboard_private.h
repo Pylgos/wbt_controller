@@ -25,4 +25,4 @@ bool keyboard_read_answer(int message, WbRequest *r);
 void keyboard_step_end();
 void wb_keyboard_init();
 
-#endif  // KEYBOARD_PRIVATE_H
+#endif // KEYBOARD_PRIVATE_H

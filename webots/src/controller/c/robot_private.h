@@ -17,20 +17,21 @@
 #ifndef ROBOT_PRIVATE_H
 #define ROBOT_PRIVATE_H
 
-#include <webots/supervisor.h>
-#include <webots/types.h>
 #include "device_private.h"
 #include "request.h"
 #include "webots/nodes.h"
+#include <webots/supervisor.h>
+#include <webots/types.h>
 
 #ifdef NDEBUG
-#define ROBOT_ASSERT(condition) \
+#define ROBOT_ASSERT(condition)                                                \
   {}
 #else
-#define ROBOT_ASSERT(condition)                                                     \
-  {                                                                                 \
-    if (!(condition))                                                               \
-      robot_abort("%s:%d: assertion failed: %s\n", __FILE__, __LINE__, #condition); \
+#define ROBOT_ASSERT(condition)                                                \
+  {                                                                            \
+    if (!(condition))                                                          \
+      robot_abort("%s:%d: assertion failed: %s\n", __FILE__, __LINE__,         \
+                  #condition);                                                 \
   }
 #endif
 
@@ -38,7 +39,8 @@ int wb_robot_get_step_duration();
 void wb_robot_flush_unlocked(const char *);
 void robot_write_request(WbDevice *, WbRequest *);
 void robot_read_answer(WbDevice *, WbRequest *);
-WbDevice *robot_get_device_with_node(WbDeviceTag tag, WbNodeType node, bool warning);
+WbDevice *robot_get_device_with_node(WbDeviceTag tag, WbNodeType node,
+                                     bool warning);
 WbDevice *robot_get_device(WbDeviceTag tag);
 int robot_get_number_of_devices();
 WbDeviceTag robot_get_device_tag(const WbDevice *);
@@ -57,4 +59,4 @@ WbSimulationMode robot_get_simulation_mode();
 void robot_set_simulation_mode(WbSimulationMode mode);
 bool robot_is_immediate_message();
 
-#endif  // ROBOT_PRIVATE_H
+#endif // ROBOT_PRIVATE_H

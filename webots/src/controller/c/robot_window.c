@@ -62,23 +62,32 @@ void robot_window_init(const char *library_name) {
   // get the entry points
   wbw_init = (_B_V)dynamic_library_get_symbol(library_handle, "wbw_init");
   wbw_cleanup = (_V_V)dynamic_library_get_symbol(library_handle, "wbw_cleanup");
-  wbw_pre_update_gui = (_V_V)dynamic_library_get_symbol(library_handle, "wbw_pre_update_gui");
-  wbw_update_gui = (_V_V)dynamic_library_get_symbol(library_handle, "wbw_update_gui");
-  wbw_read_sensors = (_V_V)dynamic_library_get_symbol(library_handle, "wbw_read_sensors");
-  wbw_write_actuators = (_V_V)dynamic_library_get_symbol(library_handle, "wbw_write_actuators");
+  wbw_pre_update_gui =
+      (_V_V)dynamic_library_get_symbol(library_handle, "wbw_pre_update_gui");
+  wbw_update_gui =
+      (_V_V)dynamic_library_get_symbol(library_handle, "wbw_update_gui");
+  wbw_read_sensors =
+      (_V_V)dynamic_library_get_symbol(library_handle, "wbw_read_sensors");
+  wbw_write_actuators =
+      (_V_V)dynamic_library_get_symbol(library_handle, "wbw_write_actuators");
   wbw_show = (_V_V)dynamic_library_get_symbol(library_handle, "wbw_show");
   if (!wbw_init) {
-    fprintf(stderr, "Error: cannot find wbw_init entry point in robot window library\n");
+    fprintf(
+        stderr,
+        "Error: cannot find wbw_init entry point in robot window library\n");
     robot_window_cleanup();
     return;
   }
   if (!wbw_cleanup) {
-    fprintf(stderr, "Error: cannot find wbw_cleanup entry point in robot window library\n");
+    fprintf(
+        stderr,
+        "Error: cannot find wbw_cleanup entry point in robot window library\n");
     robot_window_cleanup();
     return;
   }
   if (!wbw_update_gui) {
-    fprintf(stderr, "Error: cannot find wbw_update_gui entry point in robot window library\n");
+    fprintf(stderr, "Error: cannot find wbw_update_gui entry point in robot "
+                    "window library\n");
     robot_window_cleanup();
     return;
   }
@@ -144,9 +153,7 @@ void robot_window_show() {
     wbw_show();
 }
 
-bool robot_window_is_initialized() {
-  return initialized;
-}
+bool robot_window_is_initialized() { return initialized; }
 
 void *wb_robot_window_custom_function(void *args) {
   if (!initialized) {
@@ -155,7 +162,8 @@ void *wb_robot_window_custom_function(void *args) {
     return NULL;
   }
 
-  _VS_VS foo = (_VS_VS)dynamic_library_get_symbol(library_handle, "wbw_robot_window_custom_function");
+  _VS_VS foo = (_VS_VS)dynamic_library_get_symbol(
+      library_handle, "wbw_robot_window_custom_function");
   if (!foo) {
     fprintf(stderr, "Error: wbw_robot_window_custom_function is not defined\n");
     fflush(stderr);

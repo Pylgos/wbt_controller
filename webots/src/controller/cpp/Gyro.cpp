@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #define WB_ALLOW_MIXING_C_AND_CPP_API
-#include <webots/gyro.h>
 #include <webots/Gyro.hpp>
+#include <webots/gyro.h>
 
 using namespace webots;
 
@@ -22,17 +22,13 @@ void Gyro::enable(int sampling_period) {
   wb_gyro_enable(getTag(), sampling_period);
 }
 
-void Gyro::disable() {
-  wb_gyro_disable(getTag());
-}
+void Gyro::disable() { wb_gyro_disable(getTag()); }
 
 int Gyro::getSamplingPeriod() const {
   return wb_gyro_get_sampling_period(getTag());
 }
 
-const double *Gyro::getValues() const {
-  return wb_gyro_get_values(getTag());
-}
+const double *Gyro::getValues() const { return wb_gyro_get_values(getTag()); }
 
 int Gyro::getLookupTableSize() const {
   return wb_gyro_get_lookup_table_size(getTag());
