@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.8)
 project(wbt_controller)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 find_package(ament_cmake REQUIRED)
 
 file(GLOB wbt_controller_C_SRC webots/src/controller/c/*.c)
